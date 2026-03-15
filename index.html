@@ -6,178 +6,228 @@
 <title>VolarAR — Explorador de Vuelos desde Argentina</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080c14;
-    --surface: #0e1520;
-    --card: #121a28;
-    --card2: #1a2436;
-    --border: rgba(255,255,255,0.07);
-    --accent: #e8c97a;
-    --accent2: #4fc3f7;
-    --red: #ff6b6b;
-    --green: #69e0a0;
-    --purple: #b39ddb;
-    --text: #e8edf5;
-    --muted: #6b7a96;
-    --highlight: rgba(232,201,122,0.12);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(78,120,200,0.06) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(232,201,122,0.05) 0%,transparent 50%);pointer-events:none;z-index:0;}
-  header{position:relative;z-index:10;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(8,12,20,0.85);backdrop-filter:blur(10px);flex-wrap:wrap;gap:12px;}
-  .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--accent);}
-  .logo span{color:var(--text);font-weight:400;}
-  .header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-  .nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;}
-  .nav-tab{padding:7px 18px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
-  .nav-tab.active{background:var(--accent);color:#080c14;font-weight:700;}
-  .currency-toggle{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:5px 6px;}
-  .curr-btn{padding:5px 14px;border-radius:7px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;}
-  .curr-btn.active{background:var(--accent2);color:#080c14;}
-  .live-badge{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);}
-  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-  main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:22px 20px;}
-  .search-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px 24px 20px;margin-bottom:22px;}
-  .search-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:18px;}
-  .search-title span{color:var(--accent);}
-  .search-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 120px auto;gap:10px;align-items:end;}
-  .field{display:flex;flex-direction:column;gap:5px;}
-  .field label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);}
-  .field select,.field input{background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;padding:10px 13px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
-  .field select:focus,.field input:focus{border-color:var(--accent);}
-  .field select option{background:#121a28;}
-  .search-btn{background:var(--accent);color:#080c14;border:none;border-radius:10px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
-  .search-btn:hover{background:#f0d888;transform:translateY(-1px);}
-  .search-row2{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px;margin-top:10px;}
-  .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;}
-  .stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-  .stat-value{font-size:21px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif;}
-  .stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
-  .section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;}
-  .section-badge{background:var(--highlight);border:1px solid rgba(232,201,122,0.25);color:var(--accent);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:600;padding:3px 10px;border-radius:20px;}
-  .sort-controls{display:flex;gap:6px;flex-wrap:wrap;}
-  .sort-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 13px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
-  .sort-btn.active{border-color:var(--accent);color:var(--accent);background:var(--highlight);}
-  .flights-grid{display:grid;gap:10px;}
-  .flight-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 22px;display:grid;grid-template-columns:70px 1fr auto auto;gap:18px;align-items:center;transition:all .25s;cursor:pointer;position:relative;overflow:hidden;}
-  .flight-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .2s;}
-  .flight-card:hover{border-color:rgba(232,201,122,0.3);background:var(--card2);transform:translateY(-1px);}
-  .flight-card:hover::before{opacity:1;}
-  .flight-card.deal{border-color:rgba(105,224,160,0.2);}
-  .flight-card.deal::before{background:var(--green);opacity:1;}
-  .flight-card.selected-compare{border-color:var(--purple)!important;background:rgba(179,157,219,0.07)!important;}
-  .flight-card.selected-compare::before{background:var(--purple)!important;opacity:1!important;}
-  .airline-info{display:flex;flex-direction:column;align-items:center;gap:4px;}
-  .airline-logo{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
-  .airline-name{font-size:10px;color:var(--muted);text-align:center;line-height:1.2;}
-  .route-info{display:flex;align-items:center;}
-  .airport{display:flex;flex-direction:column;align-items:center;gap:1px;}
-  .airport-code{font-size:20px;font-weight:700;font-family:'Playfair Display',serif;line-height:1;}
-  .airport-city{font-size:10.5px;color:var(--muted);}
-  .airport-time{font-size:13px;font-weight:600;margin-top:3px;}
-  .route-line{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 16px;}
-  .route-duration{font-size:11px;color:var(--muted);}
-  .route-visual{display:flex;align-items:center;width:100%;}
-  .line{flex:1;height:1px;background:var(--border);}
-  .plane-icon{font-size:14px;color:var(--accent2);}
-  .route-stops{font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:600;}
-  .stops-direct{background:rgba(105,224,160,0.12);color:var(--green);}
-  .stops-1{background:rgba(79,195,247,0.12);color:var(--accent2);}
-  .stops-2{background:rgba(255,107,107,0.12);color:var(--red);}
-  .flight-meta{display:flex;flex-direction:column;gap:4px;align-items:flex-end;min-width:90px;}
-  .meta-row{display:flex;align-items:center;gap:5px;}
-  .meta-label{font-size:10.5px;color:var(--muted);}
-  .meta-val{font-size:11.5px;font-weight:500;}
-  .price-block{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:130px;}
-  .price-tag{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;color:var(--accent);line-height:1;}
-  .price-secondary{font-size:11.5px;color:var(--muted);}
-  .price-old{font-size:11px;text-decoration:line-through;color:var(--red);}
-  .deal-badge{background:rgba(105,224,160,0.15);border:1px solid rgba(105,224,160,0.3);color:var(--green);font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;}
-  .btn-row{display:flex;gap:6px;margin-top:2px;}
-  .buy-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
-  .buy-btn:hover{background:var(--accent);color:#080c14;}
-  .compare-btn{background:transparent;border:1px solid rgba(179,157,219,0.4);color:var(--purple);border-radius:7px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
-  .compare-btn:hover{background:rgba(179,157,219,0.1);}
-  .compare-btn.added{background:rgba(179,157,219,0.15);border-color:var(--purple);}
-  .compare-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,21,32,0.97);border-top:1px solid var(--border);padding:14px 24px;display:none;align-items:center;gap:16px;backdrop-filter:blur(10px);}
-  .compare-bar.visible{display:flex;}
-  .compare-items{display:flex;gap:12px;flex:1;flex-wrap:wrap;}
-  .compare-item{background:var(--card);border:1px solid rgba(179,157,219,0.3);border-radius:10px;padding:8px 14px;font-size:12.5px;display:flex;align-items:center;gap:8px;}
-  .compare-item .rem{cursor:pointer;color:var(--muted);font-size:14px;}
-  .compare-item .rem:hover{color:var(--red);}
-  .compare-now-btn{background:var(--purple);color:#080c14;border:none;border-radius:9px;padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
-  .clear-compare{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
-  .modal-overlay.visible{display:flex;}
-  .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
-  .modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
-  .modal-close{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:16px;}
-  .compare-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
-  .compare-table th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;padding:8px 16px;}
-  .compare-table td{background:var(--card);padding:12px 16px;font-size:13.5px;}
-  .compare-table td:first-child{border-radius:10px 0 0 10px;}
-  .compare-table td:last-child{border-radius:0 10px 10px 0;}
-  .compare-winner{color:var(--green);font-weight:700;}
-  .alert-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:22px;}
-  .alert-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-  .alert-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;}
-  .alert-btn{background:var(--surface);border:1px solid rgba(105,224,160,0.4);color:var(--green);border-radius:9px;padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
-  .alert-btn:hover{background:rgba(105,224,160,0.1);}
-  .active-alerts{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
-  .alert-chip{background:rgba(105,224,160,0.08);border:1px solid rgba(105,224,160,0.2);border-radius:20px;padding:5px 12px 5px 10px;font-size:12px;display:flex;align-items:center;gap:8px;color:var(--green);}
-  .alert-chip .del{cursor:pointer;color:var(--muted);font-size:13px;}
-  .domestic-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-  .dest-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
-  .dest-card:hover{border-color:rgba(232,201,122,0.3);transform:translateY(-2px);}
-  .dest-card.active-dest{border-color:var(--accent)!important;background:var(--card2)!important;}
-  .dest-emoji{font-size:28px;}
-  .dest-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;}
-  .dest-code{font-size:10.5px;color:var(--muted);}
-  .dest-price{font-size:18px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif;}
-  .dest-price-secondary{font-size:11px;color:var(--muted);}
-  .dest-from{font-size:10.5px;color:var(--muted);}
-  .dest-badge{position:absolute;top:9px;right:9px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
-  .badge-hot{background:rgba(255,107,107,0.15);color:var(--red);border:1px solid rgba(255,107,107,0.3);}
-  .badge-new{background:rgba(105,224,160,0.15);color:var(--green);border:1px solid rgba(105,224,160,0.3);}
-  .map-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:22px;}
-  .map-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-  .world-map{position:relative;width:100%;height:300px;background:var(--card);border-radius:12px;overflow:hidden;}
-  .map-pin{position:absolute;cursor:pointer;transform:translate(-50%,-50%);}
-  .pin-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--accent);background:rgba(232,201,122,0.3);transition:all .2s;animation:pinPulse 2.5s infinite;}
-  .map-pin:hover .pin-dot{transform:scale(1.6);background:rgba(232,201,122,0.6);}
-  .pin-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(8,12,20,0.9);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .2s;}
-  .map-pin:hover .pin-label{opacity:1;}
-  .pin-price{font-weight:700;color:var(--accent);}
-  @keyframes pinPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,201,122,0.4);}50%{box-shadow:0 0 0 6px rgba(232,201,122,0);}}
-  .origin-pin .pin-dot{background:rgba(79,195,247,0.4);border-color:var(--accent2);animation:none;}
-  .budget-line{background:var(--card2);border:1px solid rgba(232,201,122,0.15);border-radius:8px;padding:8px 16px;font-size:12.5px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
-  .budget-item{display:flex;align-items:center;gap:5px;}
-  .dot-green{width:8px;height:8px;border-radius:50%;background:var(--green);}
-  .dot-accent{width:8px;height:8px;border-radius:50%;background:var(--accent);}
-  .dot-red{width:8px;height:8px;border-radius:50%;background:var(--red);}
-  .tab-content{display:none;}
-  .tab-content.active{display:block;}
-  .no-results{text-align:center;padding:40px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:14px;}
-  .no-results-icon{font-size:32px;margin-bottom:10px;}
-  .pb-compare{padding-bottom:80px;}
-  .disclaimer{text-align:center;padding:18px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);margin-top:30px;}
-  .disclaimer a{color:var(--accent);text-decoration:none;}
-  @media(max-width:900px){
-    .search-grid{grid-template-columns:1fr 1fr;}
-    .search-row2{grid-template-columns:1fr 1fr;}
-    .domestic-grid{grid-template-columns:repeat(2,1fr);}
-    .flight-card{grid-template-columns:1fr;gap:12px;}
-    .stats-bar{grid-template-columns:repeat(2,1fr);}
-    .alert-grid{grid-template-columns:1fr 1fr;}
-  }
+:root{--bg:#080c14;--surface:#0e1520;--card:#121a28;--card2:#1a2436;--border:rgba(255,255,255,0.07);--accent:#e8c97a;--accent2:#4fc3f7;--red:#ff6b6b;--green:#69e0a0;--purple:#b39ddb;--text:#e8edf5;--muted:#6b7a96;--highlight:rgba(232,201,122,0.12);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(78,120,200,0.06) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(232,201,122,0.05) 0%,transparent 50%);pointer-events:none;z-index:0;}
+header{position:sticky;top:0;z-index:50;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(8,12,20,0.92);backdrop-filter:blur(12px);flex-wrap:wrap;gap:10px;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--accent);}
+.logo span{color:var(--text);font-weight:400;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;}
+.nav-tab{padding:7px 16px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.nav-tab.active{background:var(--accent);color:#080c14;font-weight:700;}
+.currency-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.curr-btn{padding:5px 14px;border-radius:7px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;}
+.curr-btn.active{background:var(--accent2);color:#080c14;}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:20px 20px 100px;}
+
+/* SEARCH */
+.search-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 24px 18px;margin-bottom:20px;}
+.search-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;margin-bottom:16px;}
+.search-title span{color:var(--accent);}
+.search-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 110px auto;gap:10px;align-items:end;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);}
+.field select,.field input{background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13.5px;padding:10px 13px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.field select:focus,.field input:focus{border-color:var(--accent);}
+.field select option{background:#121a28;}
+.search-btn{background:var(--accent);color:#080c14;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.search-btn:hover{background:#f0d888;transform:translateY(-1px);}
+.search-row2{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px;margin-top:10px;}
+
+/* BUDGET RECOMMENDER */
+.budget-section{background:var(--surface);border:1px solid rgba(232,201,122,0.25);border-radius:20px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden;}
+.budget-section::after{content:'✈';position:absolute;right:24px;top:16px;font-size:80px;opacity:0.04;pointer-events:none;}
+.budget-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:4px;}
+.budget-subtitle{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.budget-input-row{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+.budget-input-wrap{position:relative;flex:1;min-width:180px;max-width:300px;}
+.budget-sym{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:var(--accent);}
+.budget-input{background:var(--card);border:2px solid rgba(232,201,122,0.3);border-radius:12px;color:var(--text);font-family:'Playfair Display',serif;font-size:28px;font-weight:700;padding:10px 14px 10px 42px;outline:none;width:100%;transition:border-color .2s;}
+.budget-input:focus{border-color:var(--accent);}
+.budget-curr-sel{background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;cursor:pointer;-webkit-appearance:none;}
+.budget-go-btn{background:var(--accent);color:#080c14;border:none;border-radius:12px;padding:11px 26px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.budget-go-btn:hover{background:#f0d888;transform:translateY(-1px);}
+.budget-results{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.budget-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.budget-card:hover{border-color:rgba(232,201,122,0.4);transform:translateY(-2px);}
+.budget-card.rank-1{border-color:rgba(232,201,122,0.3);background:linear-gradient(135deg,var(--card),rgba(232,201,122,0.05));}
+.budget-card.rank-2{border-color:rgba(105,224,160,0.2);}
+.budget-card.rank-3{border-color:rgba(79,195,247,0.2);}
+.bc-rank{position:absolute;top:12px;right:12px;font-size:22px;}
+.bc-flag{font-size:34px;margin-bottom:8px;}
+.bc-dest{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:2px;}
+.bc-country{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.bc-price{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--accent);}
+.bc-price-alt{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+.bc-meta{display:flex;gap:7px;flex-wrap:wrap;}
+.bc-tag{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 9px;font-size:11px;color:var(--muted);}
+.bc-tag.green{background:rgba(105,224,160,0.1);border-color:rgba(105,224,160,0.3);color:var(--green);}
+.bc-savings{background:rgba(105,224,160,0.1);border:1px solid rgba(105,224,160,0.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--green);margin-top:12px;font-weight:600;}
+.budget-empty{text-align:center;padding:32px;color:var(--muted);grid-column:1/-1;font-size:14px;line-height:1.6;}
+
+/* PRICE DROPS */
+.drops-section{background:var(--surface);border:1px solid rgba(105,224,160,0.15);border-radius:20px;padding:24px;margin-bottom:20px;}
+.drops-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:4px;}
+.drops-subtitle{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.drops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.drop-card{background:var(--card);border:1px solid rgba(105,224,160,0.2);border-radius:14px;padding:18px;cursor:pointer;transition:all .25s;position:relative;}
+.drop-card:hover{transform:translateY(-2px);border-color:rgba(105,224,160,0.45);}
+.drop-badge{position:absolute;top:-1px;left:16px;background:var(--green);color:#080c14;font-size:11px;font-weight:800;padding:4px 10px;border-radius:0 0 8px 8px;letter-spacing:.5px;}
+.drop-route{font-size:14px;font-weight:600;margin-top:16px;margin-bottom:3px;}
+.drop-airline{font-size:11.5px;color:var(--muted);margin-bottom:14px;}
+.drop-prices{display:flex;align-items:flex-end;gap:10px;}
+.drop-old{font-size:15px;text-decoration:line-through;color:var(--red);opacity:.8;}
+.drop-new{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--green);}
+.drop-arrow{font-size:16px;color:var(--green);align-self:center;opacity:.6;}
+.drop-meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.drop-expires{font-size:11px;color:var(--muted);}
+.drop-btn{background:rgba(105,224,160,0.1);border:1px solid rgba(105,224,160,0.3);color:var(--green);border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+
+/* MAP */
+.map-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;}
+.map-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:14px;}
+.world-map-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;background:var(--card);}
+.world-map-wrap svg.map-bg{display:block;width:100%;height:auto;}
+.pins-overlay{position:absolute;inset:0;}
+.map-pin{position:absolute;cursor:pointer;transform:translate(-50%,-50%);}
+.pin-dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--accent);background:rgba(232,201,122,0.25);transition:all .25s;animation:pinPulse 2.5s infinite;}
+.map-pin:hover .pin-dot{width:16px;height:16px;}
+.pin-tip{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(8,12,20,0.95);border:1px solid rgba(232,201,122,0.3);border-radius:8px;padding:6px 10px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:20;}
+.map-pin:hover .pin-tip{opacity:1;}
+.tt-city{font-size:12px;font-weight:600;color:var(--text);}
+.tt-price{font-size:13px;font-weight:700;color:var(--accent);}
+.tt-info{font-size:10.5px;color:var(--muted);margin-top:1px;}
+@keyframes pinPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,201,122,0.5);}50%{box-shadow:0 0 0 5px rgba(232,201,122,0);}}
+.origin-pin .pin-dot{background:rgba(79,195,247,0.35);border-color:var(--accent2);animation:none;width:13px;height:13px;}
+.map-legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px;background:var(--card2);border:1px solid rgba(232,201,122,0.1);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--muted);}
+.ml-item{display:flex;align-items:center;gap:5px;}
+.ml-dot{width:8px;height:8px;border-radius:50%;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.stat-value{font-size:20px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.section-badge{background:var(--highlight);border:1px solid rgba(232,201,122,0.25);color:var(--accent);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:600;padding:3px 10px;border-radius:20px;}
+.sort-controls{display:flex;gap:6px;}
+.sort-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.sort-btn.active{border-color:var(--accent);color:var(--accent);background:var(--highlight);}
+
+/* FLIGHTS */
+.flights-grid{display:grid;gap:10px;}
+.flight-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:65px 1fr auto auto;gap:16px;align-items:center;transition:all .25s;cursor:pointer;position:relative;overflow:hidden;}
+.flight-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .2s;}
+.flight-card:hover{border-color:rgba(232,201,122,0.3);background:var(--card2);transform:translateY(-1px);}
+.flight-card:hover::before{opacity:1;}
+.flight-card.deal::before{background:var(--green);opacity:1;}
+.flight-card.deal{border-color:rgba(105,224,160,0.2);}
+.flight-card.selected-compare{border-color:var(--purple)!important;}
+.flight-card.selected-compare::before{background:var(--purple)!important;opacity:1!important;}
+.airline-info{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.airline-logo{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.airline-name{font-size:10px;color:var(--muted);text-align:center;}
+.route-info{display:flex;align-items:center;}
+.airport{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.airport-code{font-size:19px;font-weight:700;font-family:'Playfair Display',serif;line-height:1;}
+.airport-city{font-size:10px;color:var(--muted);}
+.airport-time{font-size:13px;font-weight:600;margin-top:3px;}
+.route-line{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 14px;}
+.route-dur{font-size:11px;color:var(--muted);}
+.route-vis{display:flex;align-items:center;width:100%;}
+.rl{flex:1;height:1px;background:var(--border);}
+.plane-ico{font-size:13px;color:var(--accent2);}
+.route-stops{font-size:10.5px;padding:2px 7px;border-radius:20px;font-weight:600;}
+.stops-d{background:rgba(105,224,160,0.12);color:var(--green);}
+.stops-1{background:rgba(79,195,247,0.12);color:var(--accent2);}
+.stops-2{background:rgba(255,107,107,0.12);color:var(--red);}
+.fmeta{display:flex;flex-direction:column;gap:4px;align-items:flex-end;min-width:85px;}
+.mr{display:flex;align-items:center;gap:4px;}
+.ml{font-size:10px;color:var(--muted);}
+.mv{font-size:11px;font-weight:500;}
+.price-block{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:125px;}
+.price-tag{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
+.price-alt{font-size:11px;color:var(--muted);}
+.price-old{font-size:11px;text-decoration:line-through;color:var(--red);}
+.deal-badge{background:rgba(105,224,160,0.15);border:1px solid rgba(105,224,160,0.3);color:var(--green);font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px;}
+.btn-row{display:flex;gap:5px;margin-top:2px;}
+.buy-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.buy-btn:hover{background:var(--accent);color:#080c14;}
+.cmp-btn{background:transparent;border:1px solid rgba(179,157,219,0.4);color:var(--purple);border-radius:7px;padding:5px 9px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;}
+.cmp-btn.added{background:rgba(179,157,219,0.15);border-color:var(--purple);}
+
+/* ALERTS */
+.alert-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:20px;}
+.alert-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:12px;}
+.alert-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;}
+.alert-btn{background:var(--surface);border:1px solid rgba(105,224,160,0.4);color:var(--green);border-radius:9px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.active-alerts{margin-top:12px;display:flex;flex-wrap:wrap;gap:7px;}
+.alert-chip{background:rgba(105,224,160,0.08);border:1px solid rgba(105,224,160,0.2);border-radius:20px;padding:4px 10px 4px 8px;font-size:12px;display:flex;align-items:center;gap:7px;color:var(--green);}
+.alert-chip .del{cursor:pointer;color:var(--muted);}
+
+/* DOMESTIC */
+.domestic-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
+.dest-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.dest-card:hover{border-color:rgba(232,201,122,0.3);transform:translateY(-2px);}
+.dest-card.active-dest{border-color:var(--accent)!important;background:var(--card2)!important;}
+.dest-emoji{font-size:26px;}
+.dest-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;}
+.dest-code{font-size:10px;color:var(--muted);}
+.dest-price{font-size:17px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif;}
+.dest-price-alt{font-size:11px;color:var(--muted);}
+.dest-badge{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.badge-hot{background:rgba(255,107,107,0.15);color:var(--red);border:1px solid rgba(255,107,107,0.3);}
+.badge-new{background:rgba(105,224,160,0.15);color:var(--green);border:1px solid rgba(105,224,160,0.3);}
+
+/* COMPARE BAR */
+.compare-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,21,32,0.97);border-top:1px solid var(--border);padding:12px 24px;display:none;align-items:center;gap:14px;backdrop-filter:blur(10px);}
+.compare-bar.visible{display:flex;}
+.cmp-items{display:flex;gap:10px;flex:1;flex-wrap:wrap;}
+.cmp-item{background:var(--card);border:1px solid rgba(179,157,219,0.3);border-radius:10px;padding:7px 12px;font-size:12px;display:flex;align-items:center;gap:7px;}
+.cmp-item .rem{cursor:pointer;color:var(--muted);}
+.cmp-now{background:var(--purple);color:#080c14;border:none;border-radius:9px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.cmp-clear{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.visible{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:920px;width:100%;max-height:85vh;overflow-y:auto;padding:26px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;}
+.modal-close{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:15px;}
+.cmp-table{width:100%;border-collapse:separate;border-spacing:0 7px;}
+.cmp-table th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;padding:7px 14px;}
+.cmp-table td{background:var(--card);padding:11px 14px;font-size:13px;}
+.cmp-table td:first-child{border-radius:10px 0 0 10px;}
+.cmp-table td:last-child{border-radius:0 10px 10px 0;}
+.cmp-winner{color:var(--green);font-weight:700;}
+
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.no-results{text-align:center;padding:40px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.disclaimer{text-align:center;padding:16px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);margin-top:24px;}
+.disclaimer a{color:var(--accent);text-decoration:none;}
+
+@media(max-width:900px){
+  .search-grid{grid-template-columns:1fr 1fr;}
+  .search-row2{grid-template-columns:1fr 1fr;}
+  .domestic-grid{grid-template-columns:repeat(2,1fr);}
+  .budget-results,.drops-grid{grid-template-columns:1fr;}
+  .flight-card{grid-template-columns:1fr;gap:12px;}
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .alert-grid{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">✈ Volar<span>AR</span></div>
   <div class="header-right">
@@ -186,34 +236,128 @@
       <button class="nav-tab" onclick="switchTab('nacional')">Nacional 🇦🇷</button>
     </div>
     <div class="currency-toggle">
-      <button class="curr-btn active" id="btnUSD" onclick="setCurrency('USD')">USD $</button>
-      <button class="curr-btn" id="btnARS" onclick="setCurrency('ARS')">ARS $</button>
+      <button class="curr-btn active" id="btnUSD" onclick="setCurrency('USD')">USD</button>
+      <button class="curr-btn" id="btnARS" onclick="setCurrency('ARS')">ARS</button>
     </div>
-    <div class="live-badge"><div class="live-dot"></div>Demo — precios de referencia</div>
+    <div class="live-badge"><div class="live-dot"></div>Demo · ref. 2025</div>
   </div>
 </header>
 
-<main id="mainContent">
-  <div class="search-box">
-    <div class="search-title">¿A dónde querés <span>volar</span>?</div>
-    <div class="search-grid">
-      <div class="field"><label>Origen</label><select id="origen"><option value="EZE">Buenos Aires (EZE) — Ezeiza</option><option value="AEP">Buenos Aires (AEP) — Aeroparque</option><option value="COR">Córdoba (COR)</option><option value="ROS">Rosario (ROS)</option></select></div>
-      <div class="field"><label>Destino</label><select id="destino"><option value="todos">Todos los destinos</option><optgroup label="— Internacional —"><option value="MAD">Madrid (MAD) 🇪🇸</option><option value="MIA">Miami (MIA) 🇺🇸</option><option value="JFK">Nueva York (JFK) 🇺🇸</option><option value="SCL">Santiago (SCL) 🇨🇱</option><option value="GRU">São Paulo (GRU) 🇧🇷</option><option value="CDG">París (CDG) 🇫🇷</option><option value="LHR">Londres (LHR) 🇬🇧</option><option value="MEX">Ciudad de México (MEX) 🇲🇽</option><option value="CUN">Cancún (CUN) 🇲🇽</option><option value="BCN">Barcelona (BCN) 🇪🇸</option><option value="NRT">Tokio (NRT) 🇯🇵</option></optgroup><optgroup label="— Nacional —"><option value="SLA">Salta (SLA)</option><option value="IGR">Iguazú (IGR)</option><option value="BRC">Bariloche (BRC)</option><option value="MDZ">Mendoza (MDZ)</option><option value="USH">Ushuaia (USH)</option></optgroup></select></div>
-      <div class="field"><label>Ida</label><input type="date" id="fechaIda" value="2025-04-20"></div>
-      <div class="field"><label>Vuelta (opcional)</label><input type="date" id="fechaVuelta"></div>
-      <div class="field"><label>Pasajeros</label><select id="pasajeros"><option value="1">1 adulto</option><option value="2">2 adultos</option><option value="3">3 adultos</option><option value="4">4 adultos</option></select></div>
-      <button class="search-btn" onclick="buscarVuelos()">🔍 Buscar</button>
+<main>
+
+<!-- SEARCH -->
+<div class="search-box">
+  <div class="search-title">¿A dónde querés <span>volar</span>?</div>
+  <div class="search-grid">
+    <div class="field"><label>Origen</label><select id="origen"><option value="EZE">Buenos Aires (EZE)</option><option value="AEP">Buenos Aires (AEP)</option><option value="COR">Córdoba (COR)</option><option value="ROS">Rosario (ROS)</option></select></div>
+    <div class="field"><label>Destino</label><select id="destino">
+      <option value="todos">Todos los destinos</option>
+      <optgroup label="— Internacional —">
+        <option value="MAD">Madrid 🇪🇸</option><option value="MIA">Miami 🇺🇸</option><option value="JFK">Nueva York 🇺🇸</option>
+        <option value="SCL">Santiago 🇨🇱</option><option value="GRU">São Paulo 🇧🇷</option><option value="CDG">París 🇫🇷</option>
+        <option value="LHR">Londres 🇬🇧</option><option value="MEX">México DF 🇲🇽</option><option value="BCN">Barcelona 🇪🇸</option><option value="NRT">Tokio 🇯🇵</option>
+      </optgroup>
+      <optgroup label="— Nacional —">
+        <option value="SLA">Salta</option><option value="IGR">Iguazú</option><option value="BRC">Bariloche</option><option value="MDZ">Mendoza</option><option value="USH">Ushuaia</option>
+      </optgroup>
+    </select></div>
+    <div class="field"><label>Ida</label><input type="date" id="fechaIda" value="2025-04-20"></div>
+    <div class="field"><label>Vuelta</label><input type="date" id="fechaVuelta"></div>
+    <div class="field"><label>Pasajeros</label><select id="pasajeros"><option value="1">1 adulto</option><option value="2">2 adultos</option><option value="3">3 adultos</option><option value="4">4 adultos</option></select></div>
+    <button class="search-btn" onclick="buscarVuelos()">🔍 Buscar</button>
+  </div>
+  <div class="search-row2">
+    <div class="field"><label>Presupuesto máx</label><input type="number" id="presupuesto" placeholder="Sin límite" min="0" oninput="renderMapPins()"></div>
+    <div class="field"><label>Escalas</label><select id="filtroEscalas"><option value="todos">Cualquiera</option><option value="0">Solo directos</option><option value="1">Hasta 1 escala</option></select></div>
+    <div class="field"><label>Aerolínea</label><select id="filtroAerolinea"><option value="todos">Todas</option><option>Aerolíneas</option><option>LATAM</option><option>Iberia</option><option>American</option><option>Delta</option><option>Air France</option><option>JetSmart</option><option>Flybondi</option></select></div>
+    <div class="field"><label>Clase</label><select id="filtroClase"><option value="todos">Todas</option><option>Económica</option><option>Business</option></select></div>
+    <div class="field"><label>Horario salida</label><select id="filtroHorario"><option value="todos">Cualquiera</option><option value="manana">Mañana (06–12h)</option><option value="tarde">Tarde (12–18h)</option><option value="noche">Noche (18–24h)</option></select></div>
+  </div>
+</div>
+
+<!-- BUDGET RECOMMENDER -->
+<div class="budget-section">
+  <div class="budget-title">🎯 ¿Cuánto tenés para gastar?</div>
+  <div class="budget-subtitle">Ingresá tu presupuesto y te recomendamos los 3 mejores destinos donde podés volar.</div>
+  <div class="budget-input-row">
+    <div class="budget-input-wrap">
+      <span class="budget-sym" id="budgetSym">U$D</span>
+      <input class="budget-input" type="number" id="budgetAmt" placeholder="1000" min="0" oninput="calcBudget()">
     </div>
-    <div class="search-row2">
-      <div class="field"><label>Presupuesto máx</label><input type="number" id="presupuesto" placeholder="Sin límite" min="0" step="50"></div>
-      <div class="field"><label>Escalas</label><select id="filtroEscalas"><option value="todos">Cualquiera</option><option value="0">Solo directos</option><option value="1">Hasta 1 escala</option></select></div>
-      <div class="field"><label>Aerolínea</label><select id="filtroAerolinea"><option value="todos">Todas</option><option value="Aerolíneas">Aerolíneas AR</option><option value="LATAM">LATAM</option><option value="Iberia">Iberia</option><option value="American">American</option><option value="Delta">Delta</option><option value="Air France">Air France</option><option value="JetSmart">JetSmart</option><option value="Flybondi">Flybondi</option></select></div>
-      <div class="field"><label>Clase</label><select id="filtroClase"><option value="todos">Todas</option><option value="Económica">Económica</option><option value="Business">Business</option></select></div>
-      <div class="field"><label>Horario salida</label><select id="filtroHorario"><option value="todos">Cualquiera</option><option value="manana">Mañana (06-12h)</option><option value="tarde">Tarde (12-18h)</option><option value="noche">Noche (18-24h)</option></select></div>
+    <select class="budget-curr-sel" id="budgetCurr" onchange="updateBudgetSym();calcBudget()">
+      <option value="USD">USD</option>
+      <option value="ARS">ARS</option>
+    </select>
+    <button class="budget-go-btn" onclick="calcBudget()">Ver destinos →</button>
+  </div>
+  <div class="budget-results" id="budgetResults">
+    <div class="budget-empty">✈ Ingresá un presupuesto arriba para ver recomendaciones personalizadas.</div>
+  </div>
+</div>
+
+<!-- PRICE DROPS -->
+<div class="drops-section">
+  <div class="drops-title">🔥 Bajas de precio — últimas 48h</div>
+  <div class="drops-subtitle">Estas rutas tuvieron caídas importantes de precio. ¡Pueden subir pronto!</div>
+  <div class="drops-grid" id="dropsGrid"></div>
+</div>
+
+<!-- INTERNACIONAL -->
+<div class="tab-content active" id="tab-internacional">
+
+  <!-- MAP -->
+  <div class="map-section">
+    <div class="map-title">🗺️ Mapa de destinos <span style="font-size:12px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif">— clic en un pin para filtrar</span></div>
+    <div class="world-map-wrap" id="mapWrap">
+      <svg class="map-bg" viewBox="0 0 1000 460" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1000" height="460" fill="#0d1521"/>
+        <!-- North America -->
+        <path d="M75,55 L90,45 L120,42 L160,44 L200,48 L230,52 L255,62 L270,78 L275,95 L268,115 L255,132 L240,148 L222,162 L205,170 L188,165 L172,158 L158,162 L142,160 L126,152 L110,140 L94,125 L82,108 L74,88 L72,70 Z" fill="rgba(79,195,247,0.07)" stroke="rgba(79,195,247,0.18)" stroke-width="0.8"/>
+        <!-- Central America / Caribbean -->
+        <path d="M180,172 L202,168 L215,180 L218,195 L210,205 L196,208 L184,200 L178,188 Z" fill="rgba(79,195,247,0.05)" stroke="rgba(79,195,247,0.12)" stroke-width="0.6"/>
+        <!-- South America -->
+        <path d="M195,215 L215,205 L238,202 L262,208 L280,222 L290,244 L295,270 L290,300 L278,332 L262,358 L248,378 L234,385 L220,378 L208,358 L198,332 L190,300 L185,268 L185,240 Z" fill="rgba(79,195,247,0.08)" stroke="rgba(79,195,247,0.2)" stroke-width="0.8"/>
+        <!-- Europe -->
+        <path d="M425,45 L445,38 L475,36 L510,40 L535,50 L548,64 L542,80 L525,92 L502,100 L478,102 L455,96 L436,84 L424,68 L420,55 Z" fill="rgba(232,201,122,0.08)" stroke="rgba(232,201,122,0.2)" stroke-width="0.8"/>
+        <!-- UK / Ireland -->
+        <path d="M415,42 L422,36 L432,38 L428,50 L418,52 Z" fill="rgba(232,201,122,0.07)" stroke="rgba(232,201,122,0.18)" stroke-width="0.6"/>
+        <!-- Africa -->
+        <path d="M445,108 L505,104 L540,116 L558,138 L562,168 L558,200 L548,232 L530,258 L510,272 L488,276 L465,268 L448,244 L438,214 L434,180 L436,148 L440,122 Z" fill="rgba(232,201,122,0.05)" stroke="rgba(232,201,122,0.14)" stroke-width="0.6"/>
+        <!-- Middle East -->
+        <path d="M552,88 L590,82 L615,90 L620,108 L605,120 L578,122 L554,112 Z" fill="rgba(105,224,160,0.05)" stroke="rgba(105,224,160,0.12)" stroke-width="0.5"/>
+        <!-- Asia -->
+        <path d="M555,42 L620,34 L690,30 L760,32 L820,40 L860,52 L875,70 L865,88 L840,102 L800,112 L755,118 L710,115 L665,108 L620,98 L580,88 L558,74 L548,58 Z" fill="rgba(105,224,160,0.07)" stroke="rgba(105,224,160,0.16)" stroke-width="0.7"/>
+        <!-- Japan -->
+        <path d="M848,58 L858,52 L868,58 L865,70 L855,74 L846,68 Z" fill="rgba(105,224,160,0.1)" stroke="rgba(105,224,160,0.25)" stroke-width="0.6"/>
+        <!-- Southeast Asia -->
+        <path d="M700,125 L730,118 L750,128 L748,145 L730,152 L710,148 Z" fill="rgba(105,224,160,0.05)" stroke="rgba(105,224,160,0.12)" stroke-width="0.5"/>
+        <!-- Australia -->
+        <path d="M748,268 L808,260 L852,268 L868,290 L870,318 L856,340 L830,352 L800,354 L772,344 L752,324 L742,298 Z" fill="rgba(179,157,219,0.07)" stroke="rgba(179,157,219,0.16)" stroke-width="0.7"/>
+        <!-- Subtle grid -->
+        <line x1="0" y1="230" x2="1000" y2="230" stroke="rgba(255,255,255,0.03)" stroke-width="0.5" stroke-dasharray="4,8"/>
+        <line x1="500" y1="0" x2="500" y2="460" stroke="rgba(255,255,255,0.03)" stroke-width="0.5" stroke-dasharray="4,8"/>
+        <line x1="250" y1="0" x2="250" y2="460" stroke="rgba(255,255,255,0.02)" stroke-width="0.5" stroke-dasharray="2,12"/>
+        <line x1="750" y1="0" x2="750" y2="460" stroke="rgba(255,255,255,0.02)" stroke-width="0.5" stroke-dasharray="2,12"/>
+      </svg>
+      <div class="pins-overlay" id="pinsOverlay"></div>
+    </div>
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:var(--green)"></div>Dentro del presupuesto</div>
+      <div class="ml-item"><div class="ml-dot" style="background:var(--accent)"></div>Sin límite definido</div>
+      <div class="ml-item"><div class="ml-dot" style="background:var(--red)"></div>Fuera del presupuesto</div>
+      <div class="ml-item"><div class="ml-dot" style="background:var(--accent2);animation:none"></div>Origen (Buenos Aires)</div>
+      <span style="margin-left:auto;font-size:11px">Presupuesto: <span id="budgetDisplay" style="color:var(--accent);font-weight:600">sin límite</span></span>
     </div>
   </div>
 
-  <div class="alert-box" id="alertBox">
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-label">Resultados</div><div class="stat-value" id="statTotal">—</div><div class="stat-sub">vuelos</div></div>
+    <div class="stat-card"><div class="stat-label">Precio más bajo</div><div class="stat-value" id="statMin">—</div><div class="stat-sub">destino económico</div></div>
+    <div class="stat-card"><div class="stat-label">Ofertas activas</div><div class="stat-value" id="statDeals">—</div><div class="stat-sub">con descuento</div></div>
+    <div class="stat-card"><div class="stat-label">Más económico</div><div class="stat-value" style="font-size:14px;margin-top:5px" id="statPop">—</div><div class="stat-sub">destino actual</div></div>
+  </div>
+
+  <div class="alert-box">
     <div class="alert-title">🔔 Alertas de precio</div>
     <div class="alert-grid">
       <div class="field"><label>Destino</label><select id="alertDest"><option value="MAD">Madrid</option><option value="MIA">Miami</option><option value="JFK">Nueva York</option><option value="CDG">París</option><option value="LHR">Londres</option><option value="SCL">Santiago</option><option value="SLA">Salta</option><option value="BRC">Bariloche</option><option value="USH">Ushuaia</option></select></div>
@@ -224,140 +368,405 @@
     <div class="active-alerts" id="activeAlerts"></div>
   </div>
 
-  <div class="tab-content active" id="tab-internacional">
-    <div class="map-section">
-      <div class="map-title">🗺️ Mapa de destinos <span style="font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;">— hacé clic en un pin para filtrar</span></div>
-      <div class="world-map" id="worldMap">
-        <svg width="100%" height="100%" viewBox="0 0 900 300" style="position:absolute;inset:0;opacity:0.08;" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5">
-          <path d="M80,80 Q120,60 160,75 Q200,85 220,70 Q260,55 300,80 Q320,95 310,120 Q290,145 260,150 Q230,155 200,140 Q170,130 150,145 Q120,165 90,150 Q60,135 65,110 Q68,90 80,80Z" fill="rgba(255,255,255,0.05)"/>
-          <path d="M320,85 Q380,70 440,80 Q490,88 520,75 Q540,65 560,80 Q575,95 560,115 Q540,140 500,150 Q460,158 420,145 Q380,132 360,145 Q335,160 315,140 Q305,120 315,100 Q318,90 320,85Z" fill="rgba(255,255,255,0.05)"/>
-          <path d="M540,90 Q580,75 640,85 Q690,95 720,80 Q745,68 760,85 Q770,100 755,120 Q735,150 700,158 Q660,165 620,150 Q580,135 560,148 Q538,163 525,145 Q515,125 525,105 Q530,94 540,90Z" fill="rgba(255,255,255,0.05)"/>
-          <path d="M200,170 Q230,160 260,170 Q290,180 295,200 Q298,225 275,240 Q250,255 225,245 Q200,232 195,210 Q192,188 200,170Z" fill="rgba(255,255,255,0.05)"/>
-          <path d="M630,165 Q660,155 690,165 Q715,175 720,198 Q722,220 700,232 Q675,245 650,235 Q628,222 625,200 Q622,180 630,165Z" fill="rgba(255,255,255,0.05)"/>
-        </svg>
-        <div id="mapPins"></div>
-      </div>
-      <div class="budget-line" id="budgetLegend">
-        <div class="budget-item"><div class="dot-green"></div>Dentro del presupuesto</div>
-        <div class="budget-item"><div class="dot-accent"></div>Precio normal</div>
-        <div class="budget-item"><div class="dot-red"></div>Fuera del presupuesto</div>
-        <span style="margin-left:auto;font-size:11px;">Presupuesto: <span id="budgetDisplay" style="color:var(--accent);font-weight:600;">sin límite</span></span>
-      </div>
+  <div class="section-header">
+    <div class="section-title">Vuelos Internacionales <span class="section-badge" id="countBadge">—</span></div>
+    <div class="sort-controls">
+      <button class="sort-btn active" onclick="sortBy('precio',this)">💰 Precio</button>
+      <button class="sort-btn" onclick="sortBy('duracion',this)">⏱ Duración</button>
+      <button class="sort-btn" onclick="sortBy('escalas',this)">🛬 Escalas</button>
     </div>
-    <div class="stats-bar">
-      <div class="stat-card"><div class="stat-label">Resultados</div><div class="stat-value" id="statTotal">—</div><div class="stat-sub">vuelos disponibles</div></div>
-      <div class="stat-card"><div class="stat-label">Precio más bajo</div><div class="stat-value" id="statMin">—</div><div class="stat-sub">destino más económico</div></div>
-      <div class="stat-card"><div class="stat-label">Ofertas activas</div><div class="stat-value" id="statDeals">—</div><div class="stat-sub">con descuento</div></div>
-      <div class="stat-card"><div class="stat-label">Más económico</div><div class="stat-value" style="font-size:15px;margin-top:4px" id="statPop">—</div><div class="stat-sub">destino</div></div>
-    </div>
-    <div class="section-header">
-      <div class="section-title">Vuelos Internacionales <span class="section-badge" id="countBadge">—</span></div>
-      <div class="sort-controls">
-        <button class="sort-btn active" onclick="sortBy('precio',this)">💰 Precio</button>
-        <button class="sort-btn" onclick="sortBy('duracion',this)">⏱ Duración</button>
-        <button class="sort-btn" onclick="sortBy('escalas',this)">🛬 Escalas</button>
-      </div>
-    </div>
-    <div class="flights-grid pb-compare" id="flightsList"></div>
   </div>
+  <div class="flights-grid" id="flightsList"></div>
+</div>
 
-  <div class="tab-content" id="tab-nacional">
-    <div class="section-header" style="margin-bottom:18px">
-      <div class="section-title">Destinos Nacionales 🇦🇷 <span class="section-badge">5 destinos</span></div>
-    </div>
-    <div class="domestic-grid" style="margin-bottom:24px" id="destCards"></div>
-    <div class="section-header">
-      <div class="section-title" id="nacDestTitle">Vuelos a Salta <span class="section-badge" id="nacCountBadge">—</span></div>
-      <div class="sort-controls">
-        <button class="sort-btn active" onclick="sortNacional('precio',this)">💰 Precio</button>
-        <button class="sort-btn" onclick="sortNacional('duracion',this)">⏱ Duración</button>
-        <button class="sort-btn" onclick="sortNacional('escalas',this)">🛬 Escalas</button>
-      </div>
-    </div>
-    <div class="flights-grid pb-compare" id="nacFlightsList"></div>
+<!-- NACIONAL -->
+<div class="tab-content" id="tab-nacional">
+  <div class="section-header" style="margin-bottom:16px">
+    <div class="section-title">Destinos Nacionales 🇦🇷 <span class="section-badge">5 destinos</span></div>
   </div>
+  <div class="domestic-grid" style="margin-bottom:22px" id="destCards"></div>
+  <div class="section-header">
+    <div class="section-title" id="nacDestTitle">Vuelos a Salta <span class="section-badge" id="nacCountBadge">—</span></div>
+    <div class="sort-controls">
+      <button class="sort-btn active" onclick="sortNac('precio',this)">💰 Precio</button>
+      <button class="sort-btn" onclick="sortNac('duracion',this)">⏱ Duración</button>
+      <button class="sort-btn" onclick="sortNac('escalas',this)">🛬 Escalas</button>
+    </div>
+  </div>
+  <div class="flights-grid" id="nacFlightsList"></div>
+</div>
 
-  <div class="disclaimer">
-    ⚠️ <strong>Demo educativa</strong> — Los precios y vuelos son de referencia. Para reservar usá <a href="https://www.despegar.com.ar" target="_blank">Despegar</a>, <a href="https://www.aerolineas.com.ar" target="_blank">Aerolíneas Argentinas</a> o <a href="https://www.latamairlines.com" target="_blank">LATAM</a>.
-  </div>
+<div class="disclaimer">⚠️ <strong>Demo educativa</strong> — Precios de referencia. Reservá en <a href="https://www.despegar.com.ar" target="_blank">Despegar</a>, <a href="https://www.aerolineas.com.ar" target="_blank">Aerolíneas</a> o <a href="https://www.latamairlines.com" target="_blank">LATAM</a>.</div>
 </main>
 
 <div class="compare-bar" id="compareBar">
-  <div style="font-size:13px;font-weight:600;color:var(--purple);white-space:nowrap;">⚖️ Comparar</div>
-  <div class="compare-items" id="compareItems"></div>
-  <button class="compare-now-btn" onclick="openCompare()">Comparar ahora</button>
-  <button class="clear-compare" onclick="clearCompare()">Limpiar</button>
+  <div style="font-size:13px;font-weight:600;color:var(--purple);white-space:nowrap">⚖️ Comparar</div>
+  <div class="cmp-items" id="cmpItems"></div>
+  <button class="cmp-now" onclick="openCmp()">Comparar ahora</button>
+  <button class="cmp-clear" onclick="clearCmp()">Limpiar</button>
 </div>
 
-<div class="modal-overlay" id="compareModal">
+<div class="modal-overlay" id="cmpModal">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">⚖️ Comparación de vuelos</div>
-      <button class="modal-close" onclick="closeCompare()">✕ Cerrar</button>
+      <button class="modal-close" onclick="closeCmp()">✕ Cerrar</button>
     </div>
-    <div id="compareContent"></div>
+    <div id="cmpContent"></div>
   </div>
 </div>
 
 <script>
-let currency='USD';
-const USD_TO_ARS=1250;
-let compareList=[],currentSort='precio',currentNacDest='SLA',currentNacSort='precio',filteredFlights=[],alerts=[];
-const FLIGHTS_INT=[
-  {id:1,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'EZE',dest:'MAD',city:'Madrid',country:'España 🇪🇸',dep:'10:30',arr:'04:15+1',duration:'13h 45m',durationMin:825,stops:0,priceUSD:680,oldPriceUSD:890,deal:true,clase:'Económica',equip:'B787'},
-  {id:2,airline:'Iberia',code:'IB',color:'#e8314b',bg:'#2a1a1e',origin:'EZE',dest:'MAD',city:'Madrid',country:'España 🇪🇸',dep:'22:00',arr:'15:45+1',duration:'13h 45m',durationMin:825,stops:0,priceUSD:720,oldPriceUSD:null,deal:false,clase:'Económica',equip:'A350'},
-  {id:3,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'EZE',dest:'MIA',city:'Miami',country:'EE.UU. 🇺🇸',dep:'08:00',arr:'17:30',duration:'9h 30m',durationMin:570,stops:0,priceUSD:520,oldPriceUSD:650,deal:true,clase:'Económica',equip:'B767'},
-  {id:4,airline:'American',code:'AA',color:'#0058a3',bg:'#0a1a2a',origin:'EZE',dest:'MIA',city:'Miami',country:'EE.UU. 🇺🇸',dep:'23:55',arr:'09:25+1',duration:'9h 30m',durationMin:570,stops:0,priceUSD:580,oldPriceUSD:null,deal:false,clase:'Económica',equip:'B777'},
-  {id:5,airline:'Delta',code:'DL',color:'#9b0000',bg:'#1e0a0a',origin:'EZE',dest:'JFK',city:'Nueva York',country:'EE.UU. 🇺🇸',dep:'21:00',arr:'12:15+1',duration:'11h 15m',durationMin:675,stops:1,priceUSD:640,oldPriceUSD:null,deal:false,clase:'Económica',equip:'B757'},
-  {id:6,airline:'United',code:'UA',color:'#1b6ca8',bg:'#0d1e2e',origin:'EZE',dest:'JFK',city:'Nueva York',country:'EE.UU. 🇺🇸',dep:'18:30',arr:'09:00+1',duration:'10h 30m',durationMin:630,stops:0,priceUSD:610,oldPriceUSD:780,deal:true,clase:'Económica',equip:'B787'},
-  {id:7,airline:'Air France',code:'AF',color:'#2b5fa5',bg:'#0d1a30',origin:'EZE',dest:'CDG',city:'París',country:'Francia 🇫🇷',dep:'13:15',arr:'08:30+1',duration:'14h 15m',durationMin:855,stops:0,priceUSD:790,oldPriceUSD:null,deal:false,clase:'Económica',equip:'B777'},
-  {id:8,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'EZE',dest:'CDG',city:'París',country:'Francia 🇫🇷',dep:'08:45',arr:'09:20+1',duration:'15h 35m',durationMin:935,stops:1,priceUSD:710,oldPriceUSD:920,deal:true,clase:'Económica',equip:'B777'},
-  {id:9,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'EZE',dest:'SCL',city:'Santiago',country:'Chile 🇨🇱',dep:'07:00',arr:'09:10',duration:'2h 10m',durationMin:130,stops:0,priceUSD:160,oldPriceUSD:null,deal:false,clase:'Económica',equip:'A320'},
-  {id:10,airline:'Sky',code:'H2',color:'#f7921e',bg:'#2a1e0a',origin:'EZE',dest:'SCL',city:'Santiago',country:'Chile 🇨🇱',dep:'14:30',arr:'16:40',duration:'2h 10m',durationMin:130,stops:0,priceUSD:120,oldPriceUSD:200,deal:true,clase:'Económica',equip:'A320'},
-  {id:11,airline:'Avianca',code:'AV',color:'#cc0000',bg:'#1e0a0a',origin:'EZE',dest:'MEX',city:'Cd. de México',country:'México 🇲🇽',dep:'06:00',arr:'19:00',duration:'10h 00m',durationMin:600,stops:1,priceUSD:480,oldPriceUSD:null,deal:false,clase:'Económica',equip:'A330'},
-  {id:12,airline:'British',code:'BA',color:'#1a1a7a',bg:'#0a0a1e',origin:'EZE',dest:'LHR',city:'Londres',country:'UK 🇬🇧',dep:'09:00',arr:'07:30+1',duration:'13h 30m',durationMin:810,stops:0,priceUSD:850,oldPriceUSD:null,deal:false,clase:'Económica',equip:'A380'},
-  {id:13,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'EZE',dest:'LHR',city:'Londres',country:'UK 🇬🇧',dep:'14:00',arr:'13:00+1',duration:'14h 00m',durationMin:840,stops:1,priceUSD:780,oldPriceUSD:1050,deal:true,clase:'Business',equip:'B777'},
-  {id:14,airline:'Iberia',code:'IB',color:'#e8314b',bg:'#2a1a1e',origin:'EZE',dest:'BCN',city:'Barcelona',country:'España 🇪🇸',dep:'11:00',arr:'06:30+1',duration:'14h 30m',durationMin:870,stops:0,priceUSD:695,oldPriceUSD:null,deal:false,clase:'Económica',equip:'A330'},
-  {id:15,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'EZE',dest:'GRU',city:'São Paulo',country:'Brasil 🇧🇷',dep:'06:30',arr:'08:45',duration:'2h 15m',durationMin:135,stops:0,priceUSD:210,oldPriceUSD:280,deal:true,clase:'Económica',equip:'A319'},
+let currency='USD',cmpList=[],curSort='precio',curNacDest='SLA',curNacSort='precio',filtered=[],alerts=[];
+const RATE=1250;
+
+const FINT=[
+  {id:1,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'EZE',dst:'MAD',city:'Madrid',ctry:'España 🇪🇸',fl:'🇪🇸',dep:'10:30',arr:'04:15+1',dur:'13h 45m',dm:825,stops:0,pUSD:680,opUSD:890,deal:true,cls:'Económica',eq:'B787'},
+  {id:2,al:'Iberia',cd:'IB',clr:'#e8314b',bg:'#2a1a1e',or:'EZE',dst:'MAD',city:'Madrid',ctry:'España 🇪🇸',fl:'🇪🇸',dep:'22:00',arr:'15:45+1',dur:'13h 45m',dm:825,stops:0,pUSD:720,opUSD:null,deal:false,cls:'Económica',eq:'A350'},
+  {id:3,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'EZE',dst:'MIA',city:'Miami',ctry:'EE.UU. 🇺🇸',fl:'🇺🇸',dep:'08:00',arr:'17:30',dur:'9h 30m',dm:570,stops:0,pUSD:520,opUSD:650,deal:true,cls:'Económica',eq:'B767'},
+  {id:4,al:'American',cd:'AA',clr:'#0058a3',bg:'#0a1a2a',or:'EZE',dst:'MIA',city:'Miami',ctry:'EE.UU. 🇺🇸',fl:'🇺🇸',dep:'23:55',arr:'09:25+1',dur:'9h 30m',dm:570,stops:0,pUSD:580,opUSD:null,deal:false,cls:'Económica',eq:'B777'},
+  {id:5,al:'Delta',cd:'DL',clr:'#9b0000',bg:'#1e0a0a',or:'EZE',dst:'JFK',city:'Nueva York',ctry:'EE.UU. 🇺🇸',fl:'🇺🇸',dep:'21:00',arr:'12:15+1',dur:'11h 15m',dm:675,stops:1,pUSD:640,opUSD:null,deal:false,cls:'Económica',eq:'B757'},
+  {id:6,al:'United',cd:'UA',clr:'#1b6ca8',bg:'#0d1e2e',or:'EZE',dst:'JFK',city:'Nueva York',ctry:'EE.UU. 🇺🇸',fl:'🇺🇸',dep:'18:30',arr:'09:00+1',dur:'10h 30m',dm:630,stops:0,pUSD:610,opUSD:780,deal:true,cls:'Económica',eq:'B787'},
+  {id:7,al:'Air France',cd:'AF',clr:'#2b5fa5',bg:'#0d1a30',or:'EZE',dst:'CDG',city:'París',ctry:'Francia 🇫🇷',fl:'🇫🇷',dep:'13:15',arr:'08:30+1',dur:'14h 15m',dm:855,stops:0,pUSD:790,opUSD:null,deal:false,cls:'Económica',eq:'B777'},
+  {id:8,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'EZE',dst:'CDG',city:'París',ctry:'Francia 🇫🇷',fl:'🇫🇷',dep:'08:45',arr:'09:20+1',dur:'15h 35m',dm:935,stops:1,pUSD:710,opUSD:920,deal:true,cls:'Económica',eq:'B777'},
+  {id:9,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'EZE',dst:'SCL',city:'Santiago',ctry:'Chile 🇨🇱',fl:'🇨🇱',dep:'07:00',arr:'09:10',dur:'2h 10m',dm:130,stops:0,pUSD:160,opUSD:null,deal:false,cls:'Económica',eq:'A320'},
+  {id:10,al:'Sky',cd:'H2',clr:'#f7921e',bg:'#2a1e0a',or:'EZE',dst:'SCL',city:'Santiago',ctry:'Chile 🇨🇱',fl:'🇨🇱',dep:'14:30',arr:'16:40',dur:'2h 10m',dm:130,stops:0,pUSD:120,opUSD:200,deal:true,cls:'Económica',eq:'A320'},
+  {id:11,al:'Avianca',cd:'AV',clr:'#cc0000',bg:'#1e0a0a',or:'EZE',dst:'MEX',city:'Cd. de México',ctry:'México 🇲🇽',fl:'🇲🇽',dep:'06:00',arr:'19:00',dur:'10h 00m',dm:600,stops:1,pUSD:480,opUSD:null,deal:false,cls:'Económica',eq:'A330'},
+  {id:12,al:'British',cd:'BA',clr:'#1a1a7a',bg:'#0a0a1e',or:'EZE',dst:'LHR',city:'Londres',ctry:'UK 🇬🇧',fl:'🇬🇧',dep:'09:00',arr:'07:30+1',dur:'13h 30m',dm:810,stops:0,pUSD:850,opUSD:null,deal:false,cls:'Económica',eq:'A380'},
+  {id:13,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'EZE',dst:'LHR',city:'Londres',ctry:'UK 🇬🇧',fl:'🇬🇧',dep:'14:00',arr:'13:00+1',dur:'14h 00m',dm:840,stops:1,pUSD:780,opUSD:1050,deal:true,cls:'Business',eq:'B777'},
+  {id:14,al:'Iberia',cd:'IB',clr:'#e8314b',bg:'#2a1a1e',or:'EZE',dst:'BCN',city:'Barcelona',ctry:'España 🇪🇸',fl:'🇪🇸',dep:'11:00',arr:'06:30+1',dur:'14h 30m',dm:870,stops:0,pUSD:695,opUSD:null,deal:false,cls:'Económica',eq:'A330'},
+  {id:15,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'EZE',dst:'GRU',city:'São Paulo',ctry:'Brasil 🇧🇷',fl:'🇧🇷',dep:'06:30',arr:'08:45',dur:'2h 15m',dm:135,stops:0,pUSD:210,opUSD:280,deal:true,cls:'Económica',eq:'A319'},
 ];
-const FLIGHTS_NAC={
-  SLA:[{id:101,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'SLA',dep:'06:30',arr:'08:40',duration:'2h 10m',durationMin:130,stops:0,priceARS:65000,oldPriceARS:90000,deal:true,clase:'Económica',equip:'A320'},{id:102,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'SLA',dep:'14:00',arr:'16:10',duration:'2h 10m',durationMin:130,stops:0,priceARS:72000,oldPriceARS:null,deal:false,clase:'Económica',equip:'B737'},{id:103,airline:'JetSmart',code:'JA',color:'#ffcc00',bg:'#2a250a',origin:'AEP',dest:'SLA',dep:'09:15',arr:'12:40',duration:'3h 25m',durationMin:205,stops:1,priceARS:48000,oldPriceARS:68000,deal:true,clase:'Económica',equip:'A320'},{id:104,airline:'Flybondi',code:'FO',color:'#ff6600',bg:'#2a1a0a',origin:'AEP',dest:'SLA',dep:'19:30',arr:'21:45',duration:'2h 15m',durationMin:135,stops:0,priceARS:55000,oldPriceARS:null,deal:false,clase:'Económica',equip:'B737'}],
-  IGR:[{id:201,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'IGR',dep:'07:00',arr:'08:50',duration:'1h 50m',durationMin:110,stops:0,priceARS:72000,oldPriceARS:95000,deal:true,clase:'Económica',equip:'A320'},{id:202,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'AEP',dest:'IGR',dep:'11:30',arr:'13:25',duration:'1h 55m',durationMin:115,stops:0,priceARS:78000,oldPriceARS:null,deal:false,clase:'Económica',equip:'A320'},{id:203,airline:'JetSmart',code:'JA',color:'#ffcc00',bg:'#2a250a',origin:'AEP',dest:'IGR',dep:'16:00',arr:'18:30',duration:'2h 30m',durationMin:150,stops:1,priceARS:52000,oldPriceARS:75000,deal:true,clase:'Económica',equip:'A320'}],
-  BRC:[{id:301,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'BRC',dep:'08:00',arr:'10:30',duration:'2h 30m',durationMin:150,stops:0,priceARS:58000,oldPriceARS:80000,deal:true,clase:'Económica',equip:'A320'},{id:302,airline:'JetSmart',code:'JA',color:'#ffcc00',bg:'#2a250a',origin:'AEP',dest:'BRC',dep:'13:45',arr:'16:10',duration:'2h 25m',durationMin:145,stops:0,priceARS:44000,oldPriceARS:60000,deal:true,clase:'Económica',equip:'A320'},{id:303,airline:'Flybondi',code:'FO',color:'#ff6600',bg:'#2a1a0a',origin:'AEP',dest:'BRC',dep:'18:00',arr:'20:30',duration:'2h 30m',durationMin:150,stops:0,priceARS:50000,oldPriceARS:null,deal:false,clase:'Económica',equip:'B737'}],
-  MDZ:[{id:401,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'MDZ',dep:'07:30',arr:'09:30',duration:'2h 00m',durationMin:120,stops:0,priceARS:48000,oldPriceARS:null,deal:false,clase:'Económica',equip:'A320'},{id:402,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'AEP',dest:'MDZ',dep:'12:00',arr:'14:00',duration:'2h 00m',durationMin:120,stops:0,priceARS:52000,oldPriceARS:null,deal:false,clase:'Económica',equip:'A320'},{id:403,airline:'JetSmart',code:'JA',color:'#ffcc00',bg:'#2a250a',origin:'AEP',dest:'MDZ',dep:'09:00',arr:'11:00',duration:'2h 00m',durationMin:120,stops:0,priceARS:35000,oldPriceARS:55000,deal:true,clase:'Económica',equip:'A320'},{id:404,airline:'Flybondi',code:'FO',color:'#ff6600',bg:'#2a1a0a',origin:'AEP',dest:'MDZ',dep:'21:00',arr:'23:00',duration:'2h 00m',durationMin:120,stops:0,priceARS:38000,oldPriceARS:58000,deal:true,clase:'Económica',equip:'B737'}],
-  USH:[{id:501,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'USH',dep:'06:00',arr:'09:15',duration:'3h 15m',durationMin:195,stops:0,priceARS:95000,oldPriceARS:null,deal:false,clase:'Económica',equip:'A320'},{id:502,airline:'Aerolíneas',code:'AR',color:'#75b2dd',bg:'#1a2a3a',origin:'AEP',dest:'USH',dep:'14:30',arr:'18:00',duration:'3h 30m',durationMin:210,stops:1,priceARS:78000,oldPriceARS:110000,deal:true,clase:'Económica',equip:'B737'},{id:503,airline:'LATAM',code:'LA',color:'#e8063a',bg:'#2a1015',origin:'AEP',dest:'USH',dep:'09:00',arr:'12:20',duration:'3h 20m',durationMin:200,stops:0,priceARS:102000,oldPriceARS:null,deal:false,clase:'Económica',equip:'A320'}],
+
+const FNAC={
+  SLA:[{id:101,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'SLA',dep:'06:30',arr:'08:40',dur:'2h 10m',dm:130,stops:0,pARS:65000,opARS:90000,deal:true,cls:'Económica',eq:'A320'},{id:102,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'SLA',dep:'14:00',arr:'16:10',dur:'2h 10m',dm:130,stops:0,pARS:72000,opARS:null,deal:false,cls:'Económica',eq:'B737'},{id:103,al:'JetSmart',cd:'JA',clr:'#ffcc00',bg:'#2a250a',or:'AEP',dst:'SLA',dep:'09:15',arr:'12:40',dur:'3h 25m',dm:205,stops:1,pARS:48000,opARS:68000,deal:true,cls:'Económica',eq:'A320'},{id:104,al:'Flybondi',cd:'FO',clr:'#ff6600',bg:'#2a1a0a',or:'AEP',dst:'SLA',dep:'19:30',arr:'21:45',dur:'2h 15m',dm:135,stops:0,pARS:55000,opARS:null,deal:false,cls:'Económica',eq:'B737'}],
+  IGR:[{id:201,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'IGR',dep:'07:00',arr:'08:50',dur:'1h 50m',dm:110,stops:0,pARS:72000,opARS:95000,deal:true,cls:'Económica',eq:'A320'},{id:202,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'AEP',dst:'IGR',dep:'11:30',arr:'13:25',dur:'1h 55m',dm:115,stops:0,pARS:78000,opARS:null,deal:false,cls:'Económica',eq:'A320'},{id:203,al:'JetSmart',cd:'JA',clr:'#ffcc00',bg:'#2a250a',or:'AEP',dst:'IGR',dep:'16:00',arr:'18:30',dur:'2h 30m',dm:150,stops:1,pARS:52000,opARS:75000,deal:true,cls:'Económica',eq:'A320'}],
+  BRC:[{id:301,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'BRC',dep:'08:00',arr:'10:30',dur:'2h 30m',dm:150,stops:0,pARS:58000,opARS:80000,deal:true,cls:'Económica',eq:'A320'},{id:302,al:'JetSmart',cd:'JA',clr:'#ffcc00',bg:'#2a250a',or:'AEP',dst:'BRC',dep:'13:45',arr:'16:10',dur:'2h 25m',dm:145,stops:0,pARS:44000,opARS:60000,deal:true,cls:'Económica',eq:'A320'},{id:303,al:'Flybondi',cd:'FO',clr:'#ff6600',bg:'#2a1a0a',or:'AEP',dst:'BRC',dep:'18:00',arr:'20:30',dur:'2h 30m',dm:150,stops:0,pARS:50000,opARS:null,deal:false,cls:'Económica',eq:'B737'}],
+  MDZ:[{id:401,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'MDZ',dep:'07:30',arr:'09:30',dur:'2h 00m',dm:120,stops:0,pARS:48000,opARS:null,deal:false,cls:'Económica',eq:'A320'},{id:402,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'AEP',dst:'MDZ',dep:'12:00',arr:'14:00',dur:'2h 00m',dm:120,stops:0,pARS:52000,opARS:null,deal:false,cls:'Económica',eq:'A320'},{id:403,al:'JetSmart',cd:'JA',clr:'#ffcc00',bg:'#2a250a',or:'AEP',dst:'MDZ',dep:'09:00',arr:'11:00',dur:'2h 00m',dm:120,stops:0,pARS:35000,opARS:55000,deal:true,cls:'Económica',eq:'A320'},{id:404,al:'Flybondi',cd:'FO',clr:'#ff6600',bg:'#2a1a0a',or:'AEP',dst:'MDZ',dep:'21:00',arr:'23:00',dur:'2h 00m',dm:120,stops:0,pARS:38000,opARS:58000,deal:true,cls:'Económica',eq:'B737'}],
+  USH:[{id:501,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'USH',dep:'06:00',arr:'09:15',dur:'3h 15m',dm:195,stops:0,pARS:95000,opARS:null,deal:false,cls:'Económica',eq:'A320'},{id:502,al:'Aerolíneas',cd:'AR',clr:'#75b2dd',bg:'#1a2a3a',or:'AEP',dst:'USH',dep:'14:30',arr:'18:00',dur:'3h 30m',dm:210,stops:1,pARS:78000,opARS:110000,deal:true,cls:'Económica',eq:'B737'},{id:503,al:'LATAM',cd:'LA',clr:'#e8063a',bg:'#2a1015',or:'AEP',dst:'USH',dep:'09:00',arr:'12:20',dur:'3h 20m',dm:200,stops:0,pARS:102000,opARS:null,deal:false,cls:'Económica',eq:'A320'}],
 };
-const DEST_INFO={SLA:{name:'Salta',emoji:'🌵',badge:'hot',badgeText:'🔥 HOT'},IGR:{name:'Iguazú',emoji:'💦',badge:'hot',badgeText:'🔥 HOT'},BRC:{name:'Bariloche',emoji:'🏔️',badge:'new',badgeText:'✨ OFERTA'},MDZ:{name:'Mendoza',emoji:'🍷',badge:'',badgeText:''},USH:{name:'Ushuaia',emoji:'🐧',badge:'new',badgeText:'❄️ TEMP'}};
-const MAP_PINS=[{dest:'MAD',city:'Madrid',x:44,y:28,priceUSD:680},{dest:'MIA',city:'Miami',x:23,y:38,priceUSD:520},{dest:'JFK',city:'Nueva York',x:22,y:28,priceUSD:610},{dest:'SCL',city:'Santiago',x:22,y:72,priceUSD:120},{dest:'GRU',city:'São Paulo',x:28,y:65,priceUSD:210},{dest:'CDG',city:'París',x:45,y:24,priceUSD:710},{dest:'LHR',city:'Londres',x:43,y:21,priceUSD:780},{dest:'MEX',city:'México',x:18,y:40,priceUSD:480},{dest:'BCN',city:'Barcelona',x:46,y:27,priceUSD:695},{dest:'NRT',city:'Tokio',x:80,y:30,priceUSD:1100},{dest:'EZE',city:'Buenos Aires',x:25,y:75,priceUSD:0,isOrigin:true}];
-function setCurrency(c){currency=c;document.getElementById('btnUSD').classList.toggle('active',c==='USD');document.getElementById('btnARS').classList.toggle('active',c==='ARS');renderFlights();renderNacional(currentNacDest);renderDestCards();updateStats();renderMapPins();}
-function getPrice(f,isNac){if(isNac){const p=f.priceARS;return currency==='ARS'?p:Math.round(p/USD_TO_ARS);}else{const p=f.priceUSD;return currency==='ARS'?Math.round(p*USD_TO_ARS):p;}}
-function getOldPrice(f,isNac){if(isNac){const p=f.oldPriceARS;if(!p)return null;return currency==='ARS'?p:Math.round(p/USD_TO_ARS);}else{const p=f.oldPriceUSD;if(!p)return null;return currency==='ARS'?Math.round(p*USD_TO_ARS):p;}}
-function fmtPrice(amount){return currency==='ARS'?`ARS ${amount.toLocaleString('es-AR')}`:`USD ${amount.toLocaleString()}`;}
-function renderFlightCard(f,isNac=false){const price=getPrice(f,isNac);const oldPrice=getOldPrice(f,isNac);const inCompare=compareList.some(c=>c.id===f.id);const stopsHtml=f.stops===0?`<span class="route-stops stops-direct">Directo</span>`:f.stops===1?`<span class="route-stops stops-1">1 escala</span>`:`<span class="route-stops stops-2">${f.stops} escalas</span>`;const discountBadge=f.deal&&oldPrice?`<div class="deal-badge">-${Math.round((1-price/oldPrice)*100)}% OFF</div>`:f.deal?`<div class="deal-badge">🔥 Oferta</div>`:'';const secondaryPrice=currency==='ARS'?`≈ USD ${Math.round(price/USD_TO_ARS)}`:`≈ ARS ${(price*USD_TO_ARS).toLocaleString('es-AR')}`;const originCity=f.origin==='AEP'?'Aeroparque':f.origin==='EZE'?'Ezeiza':f.origin;const destCity=isNac?DEST_INFO[f.dest]?.name:f.city;return`<div class="flight-card ${f.deal?'deal':''} ${inCompare?'selected-compare':''}" id="fc_${f.id}"><div class="airline-info"><div class="airline-logo" style="color:${f.color};background:${f.bg}">${f.code}</div><div class="airline-name">${f.airline}</div></div><div class="route-info"><div class="airport"><div class="airport-code">${f.origin}</div><div class="airport-city">${originCity}</div><div class="airport-time">${f.dep}</div></div><div class="route-line"><div class="route-duration">${f.duration}</div><div class="route-visual"><div class="line"></div><div class="plane-icon">✈</div><div class="line"></div></div>${stopsHtml}</div><div class="airport"><div class="airport-code">${f.dest}</div><div class="airport-city">${destCity}</div><div class="airport-time">${f.arr}</div></div></div><div class="flight-meta">${!isNac?`<div class="meta-row"><span class="meta-label">País:</span><span class="meta-val">${f.country}</span></div>`:''}<div class="meta-row"><span class="meta-label">Avión:</span><span class="meta-val">${f.equip}</span></div><div class="meta-row"><span class="meta-label">Clase:</span><span class="meta-val">${f.clase}</span></div></div><div class="price-block">${discountBadge}<div class="price-tag">${fmtPrice(price)}</div>${oldPrice?`<div class="price-old">${fmtPrice(oldPrice)}</div>`:''}<div class="price-secondary">${secondaryPrice}</div><div class="btn-row"><button class="buy-btn" onclick="reservar(${f.id},${isNac})">Ver oferta →</button><button class="compare-btn ${inCompare?'added':''}" onclick="toggleCompare(${f.id},${isNac})">⚖️</button></div></div></div>`;}
-function renderFlights(){const c=document.getElementById('flightsList');if(!filteredFlights.length){c.innerHTML=`<div class="no-results"><div class="no-results-icon">🔍</div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">Sin resultados</div>Ampliá el presupuesto o cambiá los filtros.</div>`;document.getElementById('countBadge').textContent='0 resultados';return;}c.innerHTML=filteredFlights.map(f=>renderFlightCard(f,false)).join('');document.getElementById('countBadge').textContent=`${filteredFlights.length} resultado${filteredFlights.length!==1?'s':''}`;}
-function renderNacional(dest){currentNacDest=dest;let list=[...(FLIGHTS_NAC[dest]||[])];list=sortFlightsBy(list,currentNacSort,true);document.getElementById('nacFlightsList').innerHTML=list.map(f=>renderFlightCard(f,true)).join('');const dname=DEST_INFO[dest]?.name||dest;document.getElementById('nacDestTitle').innerHTML=`Vuelos a ${dname} <span class="section-badge">${list.length} opciones</span>`;document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('active-dest'));const dc=document.getElementById('dc_'+dest);if(dc)dc.classList.add('active-dest');}
-function renderDestCards(){const container=document.getElementById('destCards');container.innerHTML=Object.entries(DEST_INFO).map(([code,info])=>{const flights=FLIGHTS_NAC[code]||[];const minFlight=flights.reduce((m,f)=>f.priceARS<(m?.priceARS||Infinity)?f:m,null);const price=minFlight?getPrice(minFlight,true):0;const secondaryPrice=minFlight?(currency==='ARS'?`≈ USD ${Math.round(price/USD_TO_ARS)}`:`≈ ARS ${(price*USD_TO_ARS).toLocaleString('es-AR')}`):'';return`<div class="dest-card" id="dc_${code}" onclick="verVueloNacional('${code}')">${info.badge?`<div class="dest-badge badge-${info.badge}">${info.badgeText}</div>`:''}<div class="dest-emoji">${info.emoji}</div><div class="dest-name">${info.name}</div><div class="dest-code">AEP → ${code}</div><div class="dest-price">${fmtPrice(price)}</div><div class="dest-price-secondary">${secondaryPrice}</div><div class="dest-from">desde, por persona</div></div>`;}).join('');}
-function renderMapPins(){const container=document.getElementById('mapPins');const budget=parseFloat(document.getElementById('presupuesto').value)||Infinity;container.innerHTML=MAP_PINS.map(pin=>{if(pin.isOrigin)return`<div class="map-pin origin-pin" style="left:${pin.x}%;top:${pin.y}%"><div class="pin-dot"></div><div class="pin-label">${pin.city}</div></div>`;const dispPrice=currency==='ARS'?Math.round(pin.priceUSD*USD_TO_ARS):pin.priceUSD;const inBudget=pin.priceUSD<=budget;const dotColor=budget===Infinity?'var(--accent)':inBudget?'var(--green)':'var(--red)';return`<div class="map-pin" style="left:${pin.x}%;top:${pin.y}%" onclick="filterByDest('${pin.dest}')"><div class="pin-dot" style="border-color:${dotColor};background:${dotColor}33"></div><div class="pin-label">${pin.city}<br><span class="pin-price">${fmtPrice(dispPrice)}</span></div></div>`;}).join('');const budgetDisplay=budget===Infinity?'sin límite':fmtPrice(currency==='ARS'?Math.round(budget*USD_TO_ARS):budget);document.getElementById('budgetDisplay').textContent=budgetDisplay;}
-function filterByDest(dest){document.getElementById('destino').value=dest;buscarVuelos();}
-function buscarVuelos(){const destino=document.getElementById('destino').value;const presupuestoRaw=parseFloat(document.getElementById('presupuesto').value)||Infinity;const presupuestoUSD=currency==='ARS'?presupuestoRaw/USD_TO_ARS:presupuestoRaw;const escalas=document.getElementById('filtroEscalas').value;const aerolinea=document.getElementById('filtroAerolinea').value;const clase=document.getElementById('filtroClase').value;const horario=document.getElementById('filtroHorario').value;const nacDests=['SLA','IGR','BRC','MDZ','USH'];if(nacDests.includes(destino)){switchTab('nacional');verVueloNacional(destino);return;}filteredFlights=FLIGHTS_INT.filter(f=>{if(destino!=='todos'&&f.dest!==destino)return false;if(f.priceUSD>presupuestoUSD)return false;if(escalas!=='todos'&&f.stops>parseInt(escalas))return false;if(aerolinea!=='todos'&&f.airline!==aerolinea)return false;if(clase!=='todos'&&f.clase!==clase)return false;if(horario!=='todos'){const h=parseInt(f.dep.split(':')[0]);if(horario==='manana'&&(h<6||h>=12))return false;if(horario==='tarde'&&(h<12||h>=18))return false;if(horario==='noche'&&(h<18))return false;}return true;});filteredFlights=sortFlightsBy(filteredFlights,currentSort,false);renderFlights();updateStats();renderMapPins();const btn=document.querySelector('.search-btn');btn.textContent='✓ Listo';btn.style.background='#69e0a0';setTimeout(()=>{btn.textContent='🔍 Buscar';btn.style.background='';},1800);}
-function sortFlightsBy(flights,c,isNac){return[...flights].sort((a,b)=>{if(c==='precio')return getPrice(a,isNac)-getPrice(b,isNac);if(c==='duracion')return a.durationMin-b.durationMin;if(c==='escalas')return a.stops-b.stops;return 0;});}
-function sortBy(c,btn){currentSort=c;document.querySelectorAll('#tab-internacional .sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filteredFlights=sortFlightsBy(filteredFlights,c,false);renderFlights();}
-function sortNacional(c,btn){currentNacSort=c;document.querySelectorAll('#tab-nacional .sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderNacional(currentNacDest);}
-function updateStats(){if(!filteredFlights.length)return;const prices=filteredFlights.map(f=>getPrice(f,false));document.getElementById('statTotal').textContent=filteredFlights.length;document.getElementById('statMin').textContent=fmtPrice(Math.min(...prices));document.getElementById('statDeals').textContent=filteredFlights.filter(f=>f.deal).length;const minF=filteredFlights.reduce((m,f)=>getPrice(f,false)<getPrice(m,false)?f:m);document.getElementById('statPop').textContent=(minF.city||minF.dest)+' ✈';}
-function toggleCompare(id,isNac){const allFlights=[...FLIGHTS_INT,...Object.values(FLIGHTS_NAC).flat()];const f=allFlights.find(fl=>fl.id===id);if(!f)return;const idx=compareList.findIndex(c=>c.id===id);if(idx>-1){compareList.splice(idx,1);}else{if(compareList.length>=3){alert('Podés comparar hasta 3 vuelos a la vez.');return;}compareList.push({...f,isNac});}renderCompareBar();const card=document.getElementById('fc_'+id);if(card)card.classList.toggle('selected-compare',idx===-1);}
-function renderCompareBar(){const bar=document.getElementById('compareBar');const items=document.getElementById('compareItems');if(!compareList.length){bar.classList.remove('visible');return;}bar.classList.add('visible');items.innerHTML=compareList.map(f=>{const price=fmtPrice(getPrice(f,f.isNac));return`<div class="compare-item">✈ ${f.origin}→${f.dest} · ${f.airline} · ${price} <span class="rem" onclick="toggleCompare(${f.id},${f.isNac})">✕</span></div>`;}).join('');}
-function clearCompare(){compareList=[];renderCompareBar();document.querySelectorAll('.flight-card').forEach(c=>c.classList.remove('selected-compare'));document.querySelectorAll('.compare-btn').forEach(b=>b.classList.remove('added'));}
-function openCompare(){if(compareList.length<2){alert('Seleccioná al menos 2 vuelos para comparar.');return;}const modal=document.getElementById('compareModal');modal.classList.add('visible');const fields=['Aerolínea','Ruta','Salida','Llegada','Duración','Escalas','Precio','Precio equivalente','Aeronave','Clase'];const rows=compareList.map(f=>{const price=fmtPrice(getPrice(f,f.isNac));const altPrice=currency==='USD'?`ARS ${(getPrice(f,f.isNac)*USD_TO_ARS).toLocaleString('es-AR')}`:`USD ${Math.round(getPrice(f,f.isNac)/USD_TO_ARS)}`;return[f.airline,`${f.origin} → ${f.dest}`,f.dep,f.arr,f.duration,f.stops===0?'Directo':f.stops+' escala/s',price,altPrice,f.equip,f.clase];});const prices=compareList.map(f=>getPrice(f,f.isNac));const bestPriceIdx=prices.indexOf(Math.min(...prices));const bestDurIdx=compareList.map(f=>f.durationMin).indexOf(Math.min(...compareList.map(f=>f.durationMin)));const bestStopsIdx=compareList.map(f=>f.stops).indexOf(Math.min(...compareList.map(f=>f.stops)));let html=`<table class="compare-table"><thead><tr><th>Característica</th>${compareList.map(f=>`<th>${f.airline} ${f.dest}</th>`).join('')}</tr></thead><tbody>`;fields.forEach((field,fi)=>{html+=`<tr><td style="color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px">${field}</td>`;rows.forEach((row,ri)=>{let winner='';if(fi===6)winner=ri===bestPriceIdx?' compare-winner':'';if(fi===4)winner=ri===bestDurIdx?' compare-winner':'';if(fi===5)winner=ri===bestStopsIdx?' compare-winner':'';html+=`<td class="${winner}">${row[fi]}${winner?' ✓':''}</td>`;});html+=`</tr>`;});html+=`</tbody></table>`;document.getElementById('compareContent').innerHTML=html;}
-function closeCompare(){document.getElementById('compareModal').classList.remove('visible');}
-function addAlert(){const dest=document.getElementById('alertDest').value;const price=parseFloat(document.getElementById('alertPrice').value);const curr=document.getElementById('alertCurr').value;if(!price||price<=0){alert('Ingresá un precio válido');return;}const destName={MAD:'Madrid',MIA:'Miami',JFK:'Nueva York',CDG:'París',LHR:'Londres',SCL:'Santiago',SLA:'Salta',BRC:'Bariloche',USH:'Ushuaia'}[dest]||dest;alerts.push({dest,destName,price,curr,id:Date.now()});renderAlerts();document.getElementById('alertPrice').value='';checkAlerts();}
+
+const DINFO={SLA:{name:'Salta',emoji:'🌵',badge:'hot',bt:'🔥 HOT'},IGR:{name:'Iguazú',emoji:'💦',badge:'hot',bt:'🔥 HOT'},BRC:{name:'Bariloche',emoji:'🏔️',badge:'new',bt:'✨ OFERTA'},MDZ:{name:'Mendoza',emoji:'🍷',badge:'',bt:''},USH:{name:'Ushuaia',emoji:'🐧',badge:'new',bt:'❄️ TEMP'}};
+
+// Map pins: x/y as % of SVG viewBox 1000x460
+const PINS=[
+  {dst:'MAD',city:'Madrid',fl:'🇪🇸',x:46.5,y:22,pUSD:680,stops:0},
+  {dst:'BCN',city:'Barcelona',fl:'🇪🇸',x:48.5,y:19,pUSD:695,stops:0},
+  {dst:'CDG',city:'París',fl:'🇫🇷',x:45,y:16,pUSD:710,stops:1},
+  {dst:'LHR',city:'Londres',fl:'🇬🇧',x:43,y:14,pUSD:780,stops:0},
+  {dst:'MIA',city:'Miami',fl:'🇺🇸',x:20,y:39,pUSD:520,stops:0},
+  {dst:'JFK',city:'Nueva York',fl:'🇺🇸',x:18.5,y:29,pUSD:610,stops:0},
+  {dst:'SCL',city:'Santiago',fl:'🇨🇱',x:22,y:74,pUSD:120,stops:0},
+  {dst:'GRU',city:'São Paulo',fl:'🇧🇷',x:27,y:64,pUSD:210,stops:0},
+  {dst:'MEX',city:'México DF',fl:'🇲🇽',x:16,y:41,pUSD:480,stops:1},
+  {dst:'NRT',city:'Tokio',fl:'🇯🇵',x:86,y:29,pUSD:1100,stops:1},
+  {dst:'EZE',city:'Buenos Aires',fl:'🇦🇷',x:24,y:77,pUSD:0,isOrigin:true},
+];
+
+const DROPS=[
+  {id:3,route:'EZE → MIA',al:'LATAM',oUSD:650,nUSD:520,pct:20,fl:'🇺🇸',dst:'MIA',exp:'Hoy 23:59',stops:'Directo'},
+  {id:10,route:'EZE → SCL',al:'Sky Airline',oUSD:200,nUSD:120,pct:40,fl:'🇨🇱',dst:'SCL',exp:'Mañana',stops:'Directo'},
+  {id:8,route:'EZE → CDG',al:'Aerolíneas',oUSD:920,nUSD:710,pct:23,fl:'🇫🇷',dst:'CDG',exp:'2 días',stops:'1 escala'},
+  {id:6,route:'EZE → JFK',al:'United',oUSD:780,nUSD:610,pct:22,fl:'🇺🇸',dst:'JFK',exp:'Hoy',stops:'Directo'},
+  {id:15,route:'EZE → GRU',al:'LATAM',oUSD:280,nUSD:210,pct:25,fl:'🇧🇷',dst:'GRU',exp:'3 días',stops:'Directo'},
+  {id:1,route:'EZE → MAD',al:'Aerolíneas',oUSD:890,nUSD:680,pct:24,fl:'🇪🇸',dst:'MAD',exp:'Mañana',stops:'Directo'},
+];
+
+// ---- helpers ----
+function gp(f,isN){if(isN)return currency==='ARS'?f.pARS:Math.round(f.pARS/RATE);return currency==='ARS'?Math.round(f.pUSD*RATE):f.pUSD;}
+function gop(f,isN){if(isN){if(!f.opARS)return null;return currency==='ARS'?f.opARS:Math.round(f.opARS/RATE);}if(!f.opUSD)return null;return currency==='ARS'?Math.round(f.opUSD*RATE):f.opUSD;}
+function fmt(n){return currency==='ARS'?`ARS ${n.toLocaleString('es-AR')}`:`USD ${n.toLocaleString()}`;}
+function fmtAlt(n,isN){return currency==='ARS'?`≈ USD ${Math.round(n/RATE)}`:`≈ ARS ${Math.round(n*RATE).toLocaleString('es-AR')}`;}
+
+// ---- currency ----
+function setCurrency(c){
+  currency=c;
+  document.getElementById('btnUSD').classList.toggle('active',c==='USD');
+  document.getElementById('btnARS').classList.toggle('active',c==='ARS');
+  renderFlights();renderNac(curNacDest);renderDestCards();updateStats();renderMapPins();calcBudget();renderDrops();
+}
+function updateBudgetSym(){
+  const c=document.getElementById('budgetCurr').value;
+  document.getElementById('budgetSym').textContent=c==='ARS'?'$':'U$D';
+}
+
+// ---- MAP ----
+function renderMapPins(){
+  const overlay=document.getElementById('pinsOverlay');
+  const budget=parseFloat(document.getElementById('presupuesto').value)||Infinity;
+  overlay.innerHTML=PINS.map(p=>{
+    const lx=p.x+'%', ly=p.y+'%';
+    if(p.isOrigin) return `<div class="map-pin origin-pin" style="left:${lx};top:${ly}"><div class="pin-dot"></div><div class="pin-tip"><div class="tt-city">✈ ${p.city}</div><div class="tt-info" style="color:var(--accent2)">Origen</div></div></div>`;
+    const dP=currency==='ARS'?Math.round(p.pUSD*RATE):p.pUSD;
+    const inB=p.pUSD<=budget;
+    const col=budget===Infinity?'var(--accent)':inB?'var(--green)':'var(--red)';
+    const sl=p.stops===0?'Directo':'1 escala';
+    return `<div class="map-pin" style="left:${lx};top:${ly}" onclick="filterDest('${p.dst}')">
+      <div class="pin-dot" style="border-color:${col};background:${col.includes('var')?col.replace(')',',0.2)').replace('var(','rgba('):col+'33'}"></div>
+      <div class="pin-tip"><div class="tt-city">${p.fl} ${p.city}</div><div class="tt-price">${fmt(dP)}</div><div class="tt-info">${sl}</div></div>
+    </div>`;
+  }).join('');
+  const bd=budget===Infinity?'sin límite':fmt(currency==='ARS'?Math.round(budget*RATE):budget);
+  document.getElementById('budgetDisplay').textContent=bd;
+}
+
+function filterDest(d){document.getElementById('destino').value=d;buscarVuelos();}
+
+// ---- BUDGET ----
+function calcBudget(){
+  const raw=parseFloat(document.getElementById('budgetAmt').value)||0;
+  const bc=document.getElementById('budgetCurr').value;
+  const bUSD=bc==='ARS'?raw/RATE:raw;
+  const cont=document.getElementById('budgetResults');
+  if(!raw||raw<=0){cont.innerHTML='<div class="budget-empty">✈ Ingresá un presupuesto arriba para ver recomendaciones personalizadas.</div>';return;}
+  const elig=FINT.filter(f=>f.pUSD<=bUSD).sort((a,b)=>{
+    const sa=(bUSD-a.pUSD)/bUSD-a.stops*0.1;
+    const sb=(bUSD-b.pUSD)/bUSD-b.stops*0.1;
+    return sb-sa;
+  });
+  const seen=new Set(),top=[];
+  for(const f of elig){if(!seen.has(f.dst)){seen.add(f.dst);top.push(f);}if(top.length>=3)break;}
+  if(!top.length){
+    const ch=FINT.reduce((m,f)=>f.pUSD<m.pUSD?f:m);
+    cont.innerHTML=`<div class="budget-empty">😔 Con ese presupuesto no hay vuelos internacionales disponibles.<br>El más económico es <strong>${fmt(currency==='ARS'?Math.round(ch.pUSD*RATE):ch.pUSD)}</strong> a ${ch.city} (${ch.al}).</div>`;
+    return;
+  }
+  const RK=['🥇','🥈','🥉'],RC=['rank-1','rank-2','rank-3'];
+  cont.innerHTML=top.map((f,i)=>{
+    const p=currency==='ARS'?Math.round(f.pUSD*RATE):f.pUSD;
+    const alt=currency==='USD'?`ARS ${Math.round(f.pUSD*RATE).toLocaleString('es-AR')}`:`USD ${f.pUSD}`;
+    const sav=bUSD-f.pUSD;
+    const savD=currency==='ARS'?`ARS ${Math.round(sav*RATE).toLocaleString('es-AR')}`:`USD ${Math.round(sav)}`;
+    const sl=f.stops===0?'Directo':f.stops===1?'1 escala':'2 escalas';
+    return `<div class="budget-card ${RC[i]}" onclick="filterDest('${f.dst}')">
+      <div class="bc-rank">${RK[i]}</div>
+      <div class="bc-flag">${f.fl}</div>
+      <div class="bc-dest">${f.city}</div>
+      <div class="bc-country">${f.ctry} · ${f.al}</div>
+      <div class="bc-price">${fmt(p)}</div>
+      <div class="bc-price-alt">≈ ${alt}</div>
+      <div class="bc-meta">
+        <span class="bc-tag ${f.stops===0?'green':''}">${sl}</span>
+        <span class="bc-tag">${f.dur}</span>
+        <span class="bc-tag">${f.eq}</span>
+      </div>
+      <div class="bc-savings">💰 Te sobran ${savD}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---- DROPS ----
+function renderDrops(){
+  document.getElementById('dropsGrid').innerHTML=DROPS.map(d=>{
+    const oP=currency==='ARS'?Math.round(d.oUSD*RATE):d.oUSD;
+    const nP=currency==='ARS'?Math.round(d.nUSD*RATE):d.nUSD;
+    return `<div class="drop-card" onclick="filterDest('${d.dst}')">
+      <div class="drop-badge">-${d.pct}% OFF</div>
+      <div class="drop-route">${d.fl} ${d.route}</div>
+      <div class="drop-airline">${d.al} · ${d.stops}</div>
+      <div class="drop-prices">
+        <div class="drop-old">${fmt(oP)}</div>
+        <div class="drop-arrow">→</div>
+        <div class="drop-new">${fmt(nP)}</div>
+      </div>
+      <div class="drop-meta">
+        <span class="drop-expires">⏰ Vence: ${d.exp}</span>
+        <button class="drop-btn" onclick="event.stopPropagation();filterDest('${d.dst}')">Ver vuelo</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ---- FLIGHT CARD ----
+function fc(f,isN=false){
+  const p=gp(f,isN),op=gop(f,isN),iC=cmpList.some(c=>c.id===f.id);
+  const sh=f.stops===0?`<span class="route-stops stops-d">Directo</span>`:f.stops===1?`<span class="route-stops stops-1">1 escala</span>`:`<span class="route-stops stops-2">${f.stops} escalas</span>`;
+  const db=f.deal&&op?`<div class="deal-badge">-${Math.round((1-p/op)*100)}% OFF</div>`:f.deal?`<div class="deal-badge">🔥 Oferta</div>`:'';
+  const altP=fmtAlt(p,isN);
+  const oc=f.or==='AEP'?'Aeroparque':f.or==='EZE'?'Ezeiza':f.or;
+  const dc=isN?DINFO[f.dst]?.name:f.city;
+  return `<div class="flight-card ${f.deal?'deal':''} ${iC?'selected-compare':''}" id="fc_${f.id}">
+    <div class="airline-info"><div class="airline-logo" style="color:${f.clr};background:${f.bg}">${f.cd}</div><div class="airline-name">${f.al}</div></div>
+    <div class="route-info">
+      <div class="airport"><div class="airport-code">${f.or}</div><div class="airport-city">${oc}</div><div class="airport-time">${f.dep}</div></div>
+      <div class="route-line"><div class="route-dur">${f.dur}</div><div class="route-vis"><div class="rl"></div><div class="plane-ico">✈</div><div class="rl"></div></div>${sh}</div>
+      <div class="airport"><div class="airport-code">${f.dst}</div><div class="airport-city">${dc}</div><div class="airport-time">${f.arr}</div></div>
+    </div>
+    <div class="fmeta">
+      ${!isN?`<div class="mr"><span class="ml">País:</span><span class="mv">${f.ctry}</span></div>`:''}
+      <div class="mr"><span class="ml">Avión:</span><span class="mv">${f.eq}</span></div>
+      <div class="mr"><span class="ml">Clase:</span><span class="mv">${f.cls}</span></div>
+    </div>
+    <div class="price-block">
+      ${db}<div class="price-tag">${fmt(p)}</div>
+      ${op?`<div class="price-old">${fmt(op)}</div>`:''}
+      <div class="price-alt">${altP}</div>
+      <div class="btn-row">
+        <button class="buy-btn" onclick="reservar(${f.id},${isN})">Ver →</button>
+        <button class="cmp-btn ${iC?'added':''}" onclick="toggleCmp(${f.id},${isN})">⚖️</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFlights(){
+  const c=document.getElementById('flightsList');
+  if(!filtered.length){c.innerHTML=`<div class="no-results">🔍 Sin resultados. Ampliá el presupuesto o cambiá los filtros.</div>`;document.getElementById('countBadge').textContent='0';return;}
+  c.innerHTML=filtered.map(f=>fc(f,false)).join('');
+  document.getElementById('countBadge').textContent=`${filtered.length} resultado${filtered.length!==1?'s':''}`;
+}
+
+function renderNac(dest){
+  curNacDest=dest;
+  let list=sortBy2([...(FNAC[dest]||[])],curNacSort,true);
+  document.getElementById('nacFlightsList').innerHTML=list.map(f=>fc(f,true)).join('');
+  document.getElementById('nacDestTitle').innerHTML=`Vuelos a ${DINFO[dest]?.name||dest} <span class="section-badge">${list.length} opciones</span>`;
+  document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('active-dest'));
+  document.getElementById('dc_'+dest)?.classList.add('active-dest');
+}
+
+function renderDestCards(){
+  document.getElementById('destCards').innerHTML=Object.entries(DINFO).map(([code,info])=>{
+    const fl=FNAC[code]||[];
+    const mf=fl.reduce((m,f)=>f.pARS<(m?.pARS||Infinity)?f:m,null);
+    const p=mf?gp(mf,true):0;
+    const alt=mf?fmtAlt(p,true):'';
+    return `<div class="dest-card" id="dc_${code}" onclick="verNac('${code}')">
+      ${info.badge?`<div class="dest-badge badge-${info.badge}">${info.bt}</div>`:''}
+      <div class="dest-emoji">${info.emoji}</div>
+      <div class="dest-name">${info.name}</div>
+      <div class="dest-code">AEP → ${code}</div>
+      <div class="dest-price">${fmt(p)}</div>
+      <div class="dest-price-alt">${alt}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats(){
+  if(!filtered.length)return;
+  const prices=filtered.map(f=>gp(f,false));
+  document.getElementById('statTotal').textContent=filtered.length;
+  document.getElementById('statMin').textContent=fmt(Math.min(...prices));
+  document.getElementById('statDeals').textContent=filtered.filter(f=>f.deal).length;
+  const mf=filtered.reduce((m,f)=>gp(f,false)<gp(m,false)?f:m);
+  document.getElementById('statPop').textContent=(mf.city||mf.dst)+' ✈';
+}
+
+// ---- SEARCH ----
+function buscarVuelos(){
+  const d=document.getElementById('destino').value;
+  const pr=parseFloat(document.getElementById('presupuesto').value)||Infinity;
+  const prUSD=currency==='ARS'?pr/RATE:pr;
+  const esc=document.getElementById('filtroEscalas').value;
+  const al=document.getElementById('filtroAerolinea').value;
+  const cl=document.getElementById('filtroClase').value;
+  const h=document.getElementById('filtroHorario').value;
+  if(['SLA','IGR','BRC','MDZ','USH'].includes(d)){switchTab('nacional');verNac(d);return;}
+  filtered=FINT.filter(f=>{
+    if(d!=='todos'&&f.dst!==d)return false;
+    if(f.pUSD>prUSD)return false;
+    if(esc!=='todos'&&f.stops>parseInt(esc))return false;
+    if(al!=='todos'&&f.al!==al)return false;
+    if(cl!=='todos'&&f.cls!==cl)return false;
+    if(h!=='todos'){const hh=parseInt(f.dep);if(h==='manana'&&(hh<6||hh>=12))return false;if(h==='tarde'&&(hh<12||hh>=18))return false;if(h==='noche'&&hh<18)return false;}
+    return true;
+  });
+  filtered=sortBy2(filtered,curSort,false);
+  renderFlights();updateStats();renderMapPins();
+  const btn=document.querySelector('.search-btn');
+  btn.textContent='✓ Listo';btn.style.background='#69e0a0';
+  setTimeout(()=>{btn.textContent='🔍 Buscar';btn.style.background='';},1800);
+}
+
+function sortBy2(fl,c,isN){
+  return[...fl].sort((a,b)=>{
+    if(c==='precio')return gp(a,isN)-gp(b,isN);
+    if(c==='duracion')return a.dm-b.dm;
+    if(c==='escalas')return a.stops-b.stops;
+    return 0;
+  });
+}
+function sortBy(c,btn){curSort=c;document.querySelectorAll('#tab-internacional .sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filtered=sortBy2(filtered,c,false);renderFlights();}
+function sortNac(c,btn){curNacSort=c;document.querySelectorAll('#tab-nacional .sort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderNac(curNacDest);}
+
+// ---- COMPARE ----
+function toggleCmp(id,isN){
+  const all=[...FINT,...Object.values(FNAC).flat()];
+  const f=all.find(fl=>fl.id===id);if(!f)return;
+  const idx=cmpList.findIndex(c=>c.id===id);
+  if(idx>-1)cmpList.splice(idx,1);
+  else{if(cmpList.length>=3){alert('Máximo 3 vuelos.');return;}cmpList.push({...f,isN});}
+  renderCmpBar();
+  document.getElementById('fc_'+id)?.classList.toggle('selected-compare',idx===-1);
+}
+function renderCmpBar(){
+  const bar=document.getElementById('compareBar');
+  if(!cmpList.length){bar.classList.remove('visible');return;}
+  bar.classList.add('visible');
+  document.getElementById('cmpItems').innerHTML=cmpList.map(f=>`<div class="cmp-item">✈ ${f.or}→${f.dst} · ${f.al} · ${fmt(gp(f,f.isN))} <span class="rem" onclick="toggleCmp(${f.id},${f.isN})">✕</span></div>`).join('');
+}
+function clearCmp(){cmpList=[];renderCmpBar();document.querySelectorAll('.flight-card').forEach(c=>c.classList.remove('selected-compare'));}
+function openCmp(){
+  if(cmpList.length<2){alert('Seleccioná al menos 2 vuelos.');return;}
+  document.getElementById('cmpModal').classList.add('visible');
+  const fields=['Aerolínea','Ruta','Salida','Llegada','Duración','Escalas','Precio','Equivalente','Aeronave','Clase'];
+  const rows=cmpList.map(f=>{
+    const p=fmt(gp(f,f.isN));
+    const alt=currency==='USD'?`ARS ${Math.round(gp(f,f.isN)*RATE).toLocaleString('es-AR')}`:`USD ${Math.round(gp(f,f.isN)/RATE)}`;
+    return[f.al,`${f.or}→${f.dst}`,f.dep,f.arr,f.dur,f.stops===0?'Directo':f.stops+' esc',p,alt,f.eq,f.cls];
+  });
+  const bp=cmpList.map(f=>gp(f,f.isN)).indexOf(Math.min(...cmpList.map(f=>gp(f,f.isN))));
+  const bd=cmpList.map(f=>f.dm).indexOf(Math.min(...cmpList.map(f=>f.dm)));
+  const bs=cmpList.map(f=>f.stops).indexOf(Math.min(...cmpList.map(f=>f.stops)));
+  let html=`<table class="cmp-table"><thead><tr><th>Criterio</th>${cmpList.map(f=>`<th>${f.al} ${f.dst}</th>`).join('')}</tr></thead><tbody>`;
+  fields.forEach((field,fi)=>{
+    html+=`<tr><td style="color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase">${field}</td>`;
+    rows.forEach((row,ri)=>{
+      let w='';
+      if(fi===6)w=ri===bp?' cmp-winner':'';
+      if(fi===4)w=ri===bd?' cmp-winner':'';
+      if(fi===5)w=ri===bs?' cmp-winner':'';
+      html+=`<td class="${w}">${row[fi]}${w?' ✓':''}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('cmpContent').innerHTML=html;
+}
+function closeCmp(){document.getElementById('cmpModal').classList.remove('visible');}
+
+// ---- ALERTS ----
+function addAlert(){
+  const d=document.getElementById('alertDest').value;
+  const p=parseFloat(document.getElementById('alertPrice').value);
+  const c=document.getElementById('alertCurr').value;
+  if(!p||p<=0){alert('Ingresá un precio válido');return;}
+  const n={MAD:'Madrid',MIA:'Miami',JFK:'Nueva York',CDG:'París',LHR:'Londres',SCL:'Santiago',SLA:'Salta',BRC:'Bariloche',USH:'Ushuaia'};
+  alerts.push({d,dn:n[d]||d,p,c,id:Date.now()});
+  renderAlerts();document.getElementById('alertPrice').value='';
+}
 function removeAlert(id){alerts=alerts.filter(a=>a.id!==id);renderAlerts();}
-function renderAlerts(){document.getElementById('activeAlerts').innerHTML=alerts.map(a=>`<div class="alert-chip">🔔 ${a.destName} < ${a.curr} ${a.price.toLocaleString()} <span class="del" onclick="removeAlert(${a.id})">✕</span></div>`).join('');}
-function checkAlerts(){alerts.forEach(a=>{const allR=[...FLIGHTS_INT,...Object.values(FLIGHTS_NAC).flat()].filter(f=>f.dest===a.dest);const match=allR.find(f=>{const p=f.priceUSD||(f.priceARS/USD_TO_ARS);const threshold=a.curr==='ARS'?a.price/USD_TO_ARS:a.price;return p<=threshold;});if(match)setTimeout(()=>alert(`🔔 ¡Alerta activada!\nHay un vuelo a ${a.destName} por ${fmtPrice(getPrice(match,!!match.priceARS))} — dentro de tu presupuesto.`),500);});}
-function switchTab(tab){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');document.querySelectorAll('.nav-tab')[tab==='internacional'?0:1].classList.add('active');document.getElementById('alertBox').style.display=tab==='internacional'?'':'none';}
-function verVueloNacional(dest){switchTab('nacional');renderNacional(dest);}
-function reservar(id,isNac){const allFlights=[...FLIGHTS_INT,...Object.values(FLIGHTS_NAC).flat()];const f=allFlights.find(fl=>fl.id===id);if(!f)return;const price=fmtPrice(getPrice(f,isNac));const altPrice=currency==='USD'?`ARS ${(getPrice(f,isNac)*USD_TO_ARS).toLocaleString('es-AR')}`:`USD ${Math.round(getPrice(f,isNac)/USD_TO_ARS)}`;alert(`✈ ${f.airline} — ${f.origin} → ${f.dest}\n📅 ${f.dep} → ${f.arr} · ${f.duration}\n💰 ${price} por persona\n💱 También: ${altPrice}\n🛫 ${f.stops===0?'Directo':f.stops+' escala/s'} · ${f.equip} · ${f.clase}\n\n⚠️ Demo — En producción redirige a la aerolínea.`);}
-filteredFlights=sortFlightsBy(FLIGHTS_INT,'precio',false);
-renderFlights();updateStats();renderDestCards();renderNacional('SLA');renderMapPins();
+function renderAlerts(){document.getElementById('activeAlerts').innerHTML=alerts.map(a=>`<div class="alert-chip">🔔 ${a.dn} < ${a.c} ${a.p.toLocaleString()} <span class="del" onclick="removeAlert(${a.id})">✕</span></div>`).join('');}
+
+// ---- NAV ----
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-tab')[tab==='internacional'?0:1].classList.add('active');
+}
+function verNac(d){switchTab('nacional');renderNac(d);}
+function reservar(id,isN){
+  const all=[...FINT,...Object.values(FNAC).flat()];
+  const f=all.find(fl=>fl.id===id);if(!f)return;
+  const p=fmt(gp(f,isN));
+  const alt=currency==='USD'?`ARS ${Math.round(gp(f,isN)*RATE).toLocaleString('es-AR')}`:`USD ${Math.round(gp(f,isN)/RATE)}`;
+  alert(`✈ ${f.al} · ${f.or} → ${f.dst}\n📅 ${f.dep} → ${f.arr} · ${f.dur}\n💰 ${p} (${alt})\n🛫 ${f.stops===0?'Directo':f.stops+' escala/s'} · ${f.eq} · ${f.cls}\n\n⚠️ Demo — reservá en Despegar o la aerolínea.`);
+}
+
+// ---- INIT ----
+filtered=sortBy2(FINT,'precio',false);
+renderFlights();updateStats();renderDestCards();renderNac('SLA');renderMapPins();renderDrops();
 </script>
 </body>
 </html>
